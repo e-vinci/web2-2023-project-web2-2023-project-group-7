@@ -68,25 +68,25 @@
 ## Cas d'utilisations 
 (duo 1 :     )  (duo 2:      )
 - High priority :
-    - apparition personage
-    - ressources gestion (depenses)
-    - bataille personage
-    - ia gestion
-    - mort personage
+    - Faire apparaitre personnage
+    - gerer ressources gestion (depenses)
+    - bataille personnage
+    - gestion de l'IA
+    - mort d un personnage
     - avancement sur le terrain (arret quand tomber sur un adversaire ou base adverse)
-    - base destruction (ou prise de degats)
+    - destruction de la base (ou prise de degats)
     - connexion ou deconection 
-    - different perso (melee, distance, tank)
-    - map de base 
-    - equipe (kill allié)
+    - creer different perso (melee, distance, tank)
+    - creer map de base 
+    - creer equipe (kill allié)
     - Choix de bibliothèque (phaser.io)
+    - creer Classement
+    - calculer etoile en fonction des conditions de victoire 
+    - afficher nombres etoiles 
 - Medium priority
-     - etoile en fonction des conditions de victoire 
-     - nombres etoiles 
      - gestion dificulte ia
-     - cookie (enristrer connection)
+     - creation cookie (enristrer connection)
      - Amelioration de batiment
-     - Classement
 - Low priority
     - evolution des perso en fonction des etoiles (arbre techonologie)
     - map diff
@@ -96,4 +96,3 @@
     - unité volante 
     - legere base de aleatoire     
     - pouvoir special
-    
