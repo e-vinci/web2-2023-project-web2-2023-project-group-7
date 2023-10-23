@@ -67,12 +67,11 @@
 
 ## Cas d'utilisations 
 - High priority :
-    - apparition personange
+    - apparition personage
     - ressources gestion (depenses)
     - bataille personage
     - ia gestion
-    - gestion dificulte ia
-    - meurt personage
+    - mort personage
     - avancement sur le terrain
     - base destruction (ou prise de degats)
     - connexion ou deconection 
@@ -81,10 +80,13 @@
 - Medium priority
     - etoile en fonction des conditions de victoire 
      - nombres etoiles 
+     - gestion dificulte ia
 - Low priority
     - evolution des perso en fonction des etoiles (arbre techonologie)
     - map diff
     - 1 vs 1
     - plus de type de perso + skin dif 
     - faction (bonus en fonction)
-    
+    - unité volante 
+    - legere base de aleatoire     
+    - pouvoir special
