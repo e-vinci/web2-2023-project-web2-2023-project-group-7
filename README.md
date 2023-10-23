@@ -73,17 +73,20 @@
     - bataille personage
     - ia gestion
     - mort personage
-    - avancement sur le terrain
+    - avancement sur le terrain (arret quand tomber sur un adversaire ou base adverse)
     - base destruction (ou prise de degats)
     - connexion ou deconection 
-    - different perso 
+    - different perso (melee, distance, tank)
     - map de base 
     - equipe (kill allié)
+    - Choix de bibliothèque (phaser.io)
 - Medium priority
      - etoile en fonction des conditions de victoire 
      - nombres etoiles 
      - gestion dificulte ia
      - cookie (enristrer connection)
+     - Amelioration de batiment
+     - Classement
 - Low priority
     - evolution des perso en fonction des etoiles (arbre techonologie)
     - map diff
@@ -93,3 +96,4 @@
     - unité volante 
     - legere base de aleatoire     
     - pouvoir special
+    
