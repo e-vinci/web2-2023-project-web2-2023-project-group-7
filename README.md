@@ -66,6 +66,7 @@
 - Une fois votre projet soumis, vous devrez réaliser un minimum de 5 revues qui vous seront attribuées automatiquement via le site du cours.
 
 ## Cas d'utilisations 
+(duo 1 :     )  (duo 2:      )
 - High priority :
     - apparition personage
     - ressources gestion (depenses)
@@ -76,11 +77,13 @@
     - base destruction (ou prise de degats)
     - connexion ou deconection 
     - different perso 
-    - ()
+    - map de base 
+    - equipe (kill allié)
 - Medium priority
-    - etoile en fonction des conditions de victoire 
+     - etoile en fonction des conditions de victoire 
      - nombres etoiles 
      - gestion dificulte ia
+     - cookie (enristrer connection)
 - Low priority
     - evolution des perso en fonction des etoiles (arbre techonologie)
     - map diff
