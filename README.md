@@ -64,3 +64,27 @@
 
 ## Revues de projets par les pairs
 - Une fois votre projet soumis, vous devrez réaliser un minimum de 5 revues qui vous seront attribuées automatiquement via le site du cours.
+
+## Cas d'utilisations 
+- High priority :
+    - apparition personange
+    - ressources gestion (depenses)
+    - bataille personage
+    - ia gestion
+    - gestion dificulte ia
+    - meurt personage
+    - avancement sur le terrain
+    - base destruction (ou prise de degats)
+    - connexion ou deconection 
+    - different perso 
+    - ()
+- Medium priority
+    - etoile en fonction des conditions de victoire 
+     - nombres etoiles 
+- Low priority
+    - evolution des perso en fonction des etoiles (arbre techonologie)
+    - map diff
+    - 1 vs 1
+    - plus de type de perso + skin dif 
+    - faction (bonus en fonction)
+    
