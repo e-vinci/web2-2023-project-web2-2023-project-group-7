@@ -1,0 +1,13 @@
+/*css pour les boutons de la home page test*/
+.home-page-content {
+    text-align: center;
+  }
+  
+  button {
+    display: block;
+    margin: 10px auto;
+    padding: 15px 30px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  

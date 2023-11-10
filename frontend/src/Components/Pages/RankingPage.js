@@ -1,0 +1,26 @@
+
+const RankingPage = () => {
+  const main = document.querySelector('main');
+
+  // Création de la structure de la page de classement
+  const rankingPageContent = document.createElement('div');
+  rankingPageContent.classList.add('ranking-page-content');
+
+  const backButton = document.createElement('button');
+  backButton.textContent = 'Back to Home';
+  backButton.addEventListener('click', () => {
+    // Ajoutez ici la logique pour rediriger l'utilisateur vers la page d'accueil
+    window.location.href = '/ranking'; // Assurez-vous que "/" est le chemin correct de votre page d'accueil
+  });
+
+  // Ajout des éléments à la page de classement
+  rankingPageContent.appendChild(backButton);
+
+  // Effacement du contenu précédent du main
+  main.innerHTML = '';
+
+  // Ajout de la nouvelle structure à la page principale
+  main.appendChild(rankingPageContent);
+};
+
+export default RankingPage;
