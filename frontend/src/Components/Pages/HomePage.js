@@ -1,3 +1,4 @@
+import ecrandefondhomepage from '../../assets/Capture.png';
 
 const HomePage = () => {
   const main = document.querySelector('main');
@@ -5,6 +6,15 @@ const HomePage = () => {
   // Création de la structure de la page d'accueil
   const homePageContent = document.createElement('div');
   homePageContent.classList.add('home-page-content');
+
+  // Ajout de styles pour définir l'image de fond
+  homePageContent.style.backgroundImage = `url(${ecrandefondhomepage})`;
+  homePageContent.style.backgroundSize = 'cover';
+  homePageContent.style.backgroundPosition = 'center';
+  homePageContent.style.backgroundRepeat = 'no-repeat';
+
+  const buttonsContainer = document.createElement('div');
+  buttonsContainer.classList.add('buttons-container');
 
   const playButton = document.createElement('button');
   playButton.textContent = 'Play';
@@ -20,9 +30,12 @@ const HomePage = () => {
     window.location.href = '/ranking';
   });
 
-  // Ajout des boutons à la page d'accueil
-  homePageContent.appendChild(playButton);
-  homePageContent.appendChild(rankingButton);
+  // Ajout des boutons au conteneur
+  buttonsContainer.appendChild(playButton);
+  buttonsContainer.appendChild(rankingButton);
+
+  // Ajout du conteneur de boutons à la page d'accueil
+  homePageContent.appendChild(buttonsContainer);
 
   // Effacement du contenu précédent du main
   main.innerHTML = '';
@@ -32,6 +45,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-
-

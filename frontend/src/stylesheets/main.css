@@ -1,13 +1,16 @@
-/*css pour les boutons de la home page test*/
-.home-page-content {
-    text-align: center;
-  }
-  
-  button {
-    display: block;
-    margin: 10px auto;
-    padding: 15px 30px;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  
+
+/*css pour la home page */
+/* Ajoutez ce style à votre fichier CSS ou à votre balise style dans le composant React */
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Ajustez la hauteur en fonction de vos besoins */
+}
+
+.home-page-content button {
+  margin: 30px;
+  padding: 30px 50px;
+  font-size: 31px;
+}

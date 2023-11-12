@@ -1,4 +1,5 @@
-// import { login } from "../../../../api/models/users";
+
+ // import  login  from "web2-2023-project-web2-2023-project-group-7/api/models/users.js" ;
 
 const ConnectionPage = () => {
     const main = document.querySelector('main');
@@ -34,6 +35,7 @@ const ConnectionPage = () => {
       if (username && password) {
         // Envoyez les informations au serveur (vous devrez mettre en place une logique côté serveur pour l'authentification)
         // window.location.href = '/dashboard'; // Redirigez l'utilisateur après la connexion
+        // login(username,password);
         
         alert('Connexion réussie!');
         window.location.href = '/';
