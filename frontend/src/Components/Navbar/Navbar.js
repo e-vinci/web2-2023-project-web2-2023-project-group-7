@@ -36,11 +36,11 @@ const Navbar = () => {
               <li class="nav-item">
                 <a class="nav-link" href="#" data-uri="/ranking">Ranking</a>
               </li>
-              <li class="nav-item dropdown">
+              <li class="nav-item dropdown ml-auto">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Dropdown</a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#" data-uri="/connectionPage">Login</a></li>
-                  <li><a class="dropdown-item" href="#" data-uri="/connectionPage">Register</a></li>
+                  <li><a class="dropdown-item" href="#" data-uri="/loginPage">Login</a></li>
+                  <li><a class="dropdown-item" href="#" data-uri="/registerPage">Register</a></li>
                 </ul>
               </li>  
                      
