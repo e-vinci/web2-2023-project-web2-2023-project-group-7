@@ -1,3 +1,4 @@
+// import ecranRanking from '../../assets/Capture1.png';
 
 const RankingPage = () => {
   const main = document.querySelector('main');
