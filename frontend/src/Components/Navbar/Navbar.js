@@ -13,7 +13,7 @@ const Navbar = () => {
   const navbar = `
   <nav class="navbar navbar-expand-lg navbar bg-dark navbar-dark fixed-top">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">Add your brand here</a>
+          
           <button
             class="navbar-toggler"
             type="button"

@@ -1,5 +1,7 @@
 import ecrandefondhomepage from '../../assets/Capture.png';
 
+
+
 const HomePage = () => {
   const main = document.querySelector('main');
 
