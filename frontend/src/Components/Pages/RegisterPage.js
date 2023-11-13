@@ -31,6 +31,16 @@ const ConnectionPage = () => {
   usernameInput.name = 'username';
   usernameInput.required = true;
 
+  const emailLabel = document.createElement('label');
+  emailLabel.textContent = 'Email';
+  emailLabel.classList.add('form-label');
+  const emailInput = document.createElement('input');
+  emailInput.type = 'email';
+  emailInput.classList.add('form-control');
+  emailInput.id = 'email';
+  emailInput.name = 'email';
+  emailInput.required = true;
+
   const passwordLabel = document.createElement('label');
   passwordLabel.textContent = 'Mot de passe';
   passwordLabel.classList.add('form-label');
@@ -41,6 +51,16 @@ const ConnectionPage = () => {
   passwordInput.name = 'password';
   passwordInput.required = true;
 
+  const confirmPasswordLabel = document.createElement('label');
+  confirmPasswordLabel.textContent = 'Confirmer le mot de passe';
+  confirmPasswordLabel.classList.add('form-label');
+  const confirmPasswordInput = document.createElement('input');
+  confirmPasswordInput.type = 'password';
+  confirmPasswordInput.classList.add('form-control');
+  confirmPasswordInput.id = 'confirmPassword';
+  confirmPasswordInput.name = 'confirmPassword';
+  confirmPasswordInput.required = true;
+
   const submitButton = document.createElement('button');
   submitButton.textContent = 'Se connecter';
   submitButton.classList.add('btn', 'btn-primary', 'mt-3');
@@ -48,22 +68,28 @@ const ConnectionPage = () => {
     event.preventDefault(); // Empêche la soumission du formulaire pour l'exemple
     // Ajoutez ici la logique pour soumettre le formulaire de connexion
     const username = usernameInput.value;
+    const email = emailInput.value;
     const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
 
     // Exemple : Validation basique des champs
-    if (username && password) {
+    if (username && email && password && confirmPassword && password === confirmPassword) {
       alert('Connexion réussie!');
       window.location.href = '/';
     } else {
-      alert('Veuillez remplir tous les champs.');
+      alert('Veuillez remplir tous les champs et assurez-vous que les mots de passe correspondent.');
     }
   });
 
   // Ajout des éléments au formulaire
   form.appendChild(usernameLabel);
   form.appendChild(usernameInput);
+  form.appendChild(emailLabel);
+  form.appendChild(emailInput);
   form.appendChild(passwordLabel);
   form.appendChild(passwordInput);
+  form.appendChild(confirmPasswordLabel);
+  form.appendChild(confirmPasswordInput);
   form.appendChild(submitButton);
 
   // Ajout du formulaire au conteneur
