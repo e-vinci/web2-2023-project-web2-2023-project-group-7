@@ -15,6 +15,7 @@ const HomePage = () => {
   homePageContent.style.backgroundPosition = 'center';
   homePageContent.style.backgroundRepeat = 'no-repeat';
 
+
   const buttonsContainer = document.createElement('div');
   buttonsContainer.classList.add('buttons-container');
 
