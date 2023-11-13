@@ -1,4 +1,4 @@
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import du fichier CSS Bootstrap
+// import 'bootstrap/dist/css/bootstrap.min.css'; // Import du fichier CSS Bootstrap
 // eslint-disable-next-line import/no-unresolved
 import ecrandefondhomepage from '../../assets/Capture3.png';
 
