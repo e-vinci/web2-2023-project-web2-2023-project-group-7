@@ -8,6 +8,7 @@ import bombAsset from '../../assets/bomb.png';
 import idleAsset from '../../assets/Samurai/Idle.png';
 import walkAsset from '../../assets/Samurai/Walk.png';
 import jumpAsset from '../../assets/Samurai/Jump.png';
+import healthAsset from '../../assets/health.png';
 
 const GROUND_KEY = 'ground';
 const IDLE_KEY = 'idle';
@@ -25,6 +26,7 @@ class GameScene extends Phaser.Scene {
     this.stars = undefined;
     this.bombSpawner = undefined;
     this.gameOver = false;
+    this.health = 3;
   }
 
   preload() {
@@ -32,23 +34,25 @@ class GameScene extends Phaser.Scene {
     this.load.image(GROUND_KEY, platformAsset);
     this.load.image(STAR_KEY, starAsset);
     this.load.image(BOMB_KEY, bombAsset);
+    this.load.image('health', healthAsset);
 
     this.load.spritesheet(IDLE_KEY, idleAsset, {
-      frameWidth: 128,
-      frameHeight: 128,
+      frameWidth: 67,
+      frameHeight: 74,
     });
     this.load.spritesheet(WALK_KEY, walkAsset, {
-      frameWidth: 128,
-      frameHeight: 128,
+      frameWidth: 67,
+      frameHeight: 74,
     });
     this.load.spritesheet(JUMP_KEY, jumpAsset, {
-      frameWidth: 128,
-      frameHeight: 128,
+      frameWidth: 67,
+      frameHeight: 74,
     });
   }
 
   create() {
     this.add.image(400, 300, 'sky');
+    this.health = this.createHealth();
     const platforms = this.createPlatforms();
     this.player = this.createPlayer();
     this.stars = this.createStars();
@@ -84,7 +88,6 @@ class GameScene extends Phaser.Scene {
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-330);
-      this.player.anims.play('up');
     }
 
   }
@@ -103,6 +106,12 @@ class GameScene extends Phaser.Scene {
     return platforms;
   }
 
+  createHealth(){
+    const hp = this.add.image(70, 100,'health');
+    this.add.text(40, 100, this.health.toString());
+    return hp;
+  }
+
   createPlayer() {
     const player = this.physics.add.sprite(100, 450, IDLE_KEY);
     player.setBounce(0.2);
@@ -112,7 +121,7 @@ class GameScene extends Phaser.Scene {
     */
     this.anims.create({
       key: 'left',
-      frames: this.anims.generateFrameNumbers(WALK_KEY, { start: 0, end: 8 }),
+      frames: this.anims.generateFrameNumbers(WALK_KEY, { start: 0, end: 8}),
       frameRate: 10,
       repeat: -1,
     });
@@ -178,14 +187,19 @@ class GameScene extends Phaser.Scene {
   }
 
   hitBomb(player) {
-    this.scoreLabel.setText(`GAME OVER : ( \nYour Score = ${this.scoreLabel.score}`);
-    this.physics.pause();
+    if(this.health <=1){
+      this.scoreLabel.setText(`GAME OVER : ( \nYour Score = ${this.scoreLabel.score}`);
+      this.physics.pause();
 
-    player.setTint(0xff0000);
+      player.setTint(0xff0000);
 
-    player.anims.play('turn');
+      player.anims.play('turn');
 
-    this.gameOver = true;
+      this.gameOver = true;
+    }
+    else{
+      this.health -= 1;
+    }
   }
 }
 
