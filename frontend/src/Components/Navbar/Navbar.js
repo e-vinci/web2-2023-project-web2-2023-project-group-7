@@ -12,6 +12,7 @@ import logo from '../../assets/logoHuman.png';
 const Navbar = () => {
   const navbarWrapper = document.querySelector('#navbarWrapper');
   const navbar = `
+  height: 10%;
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
   <div class="container-fluid">
 
