@@ -30,7 +30,7 @@ const ConnectionPage = () => {
   usernameInput.id = 'username';
   usernameInput.name = 'username';
   usernameInput.required = true;
-
+  
   const emailLabel = document.createElement('label');
   emailLabel.textContent = 'Email';
   emailLabel.classList.add('form-label');
@@ -68,12 +68,11 @@ const ConnectionPage = () => {
     event.preventDefault(); // Empêche la soumission du formulaire pour l'exemple
     // Ajoutez ici la logique pour soumettre le formulaire de connexion
     const username = usernameInput.value;
-    const email = emailInput.value;
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
 
     // Exemple : Validation basique des champs
-    if (username && email && password && confirmPassword && password === confirmPassword) {
+    if (username && password && confirmPassword && password === confirmPassword) {
       alert('Connexion réussie!');
       window.location.href = '/routes/users';
       window.location.href = '/';
@@ -86,8 +85,6 @@ const ConnectionPage = () => {
   // Ajout des éléments au formulaire
   form.appendChild(usernameLabel);
   form.appendChild(usernameInput);
-  form.appendChild(emailLabel);
-  form.appendChild(emailInput);
   form.appendChild(passwordLabel);
   form.appendChild(passwordInput);
   form.appendChild(confirmPasswordLabel);
