@@ -75,7 +75,9 @@ const ConnectionPage = () => {
     // Exemple : Validation basique des champs
     if (username && email && password && confirmPassword && password === confirmPassword) {
       alert('Connexion réussie!');
+      window.location.href = '/routes/users';
       window.location.href = '/';
+
     } else {
       alert('Veuillez remplir tous les champs et assurez-vous que les mots de passe correspondent.');
     }
