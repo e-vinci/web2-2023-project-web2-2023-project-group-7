@@ -64,7 +64,17 @@ const ConnectionPage = () => {
     // Exemple : Validation basique des champs
     if (username  && password && confirmPassword && password === confirmPassword) {
       alert('register complet!');
-      <
+      const response = await fetch(${process.env.API_BASE_URL}/auths/register, {
+        method: 'POST',
+        body: JSON.stringify({ username, password }),
+        mode: 'cors',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+    
+      //if (!response.ok) {throw new Error(fetch error : ${response.status} : ${response.statusText});}
+    
+      const authenticatedUser = await response.json();
 
     } else {
       alert('Veuillez remplir tous les champs et assurez-vous que les mots de passe correspondent.');
