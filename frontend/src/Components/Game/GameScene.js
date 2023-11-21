@@ -16,6 +16,7 @@ const WALK_KEY = 'walk';
 const JUMP_KEY = 'jump';
 const STAR_KEY = 'star';
 const BOMB_KEY = 'bomb';
+let info;
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -37,22 +38,22 @@ class GameScene extends Phaser.Scene {
     this.load.image('health', healthAsset);
 
     this.load.spritesheet(IDLE_KEY, idleAsset, {
-      frameWidth: 67,
-      frameHeight: 74,
+      frameWidth: 128,
+      frameHeight: 128,
     });
     this.load.spritesheet(WALK_KEY, walkAsset, {
-      frameWidth: 67,
-      frameHeight: 74,
+      frameWidth: 128,
+      frameHeight: 128,
     });
     this.load.spritesheet(JUMP_KEY, jumpAsset, {
-      frameWidth: 67,
-      frameHeight: 74,
+      frameWidth: 128,
+      frameHeight: 128,
     });
   }
 
   create() {
     this.add.image(400, 300, 'sky');
-    this.health = this.createHealth();
+    this.createHealth();
     const platforms = this.createPlatforms();
     this.player = this.createPlayer();
     this.stars = this.createStars();
@@ -108,7 +109,7 @@ class GameScene extends Phaser.Scene {
 
   createHealth(){
     const hp = this.add.image(70, 100,'health');
-    this.add.text(40, 100, this.health.toString());
+    info = this.add.text(40, 100, this.health);
     return hp;
   }
 
@@ -116,34 +117,35 @@ class GameScene extends Phaser.Scene {
     const player = this.physics.add.sprite(100, 450, IDLE_KEY);
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
+    player.body.setSize(67,74,false).setOffset(0,54);
     /* The 'left' animation uses frames 0, 1, 2 and 3 and runs at 10 frames per second.
     The 'repeat -1' value tells the animation to loop.
     */
     this.anims.create({
       key: 'left',
-      frames: this.anims.generateFrameNumbers(WALK_KEY, { start: 0, end: 8}),
-      frameRate: 10,
+      frames: this.anims.generateFrameNumbers(WALK_KEY, { start: 0, end: 8 }),
+      frameRate: 20,
       repeat: -1,
     });
 
     this.anims.create({
       key: 'turn',
       frames: this.anims.generateFrameNumbers(IDLE_KEY, { start: 0, end: 5 }),
-      frameRate: 10,
+      frameRate: 20,
       repeat: -1,
     });
 
     this.anims.create({
       key: 'right',
       frames: this.anims.generateFrameNumbers(WALK_KEY, { start: 0, end: 8 }),
-      frameRate: 10,
+      frameRate: 20,
       repeat: -1,
     });
 
     this.anims.create({
       key: 'up',
       frames: this.anims.generateFrameNumbers(JUMP_KEY, { start: 0, end: 8 }),
-      frameRate: 10,
+      frameRate: 20,
       repeat: -1,
     });
 
@@ -187,6 +189,7 @@ class GameScene extends Phaser.Scene {
   }
 
   hitBomb(player) {
+    
     if(this.health <=1){
       this.scoreLabel.setText(`GAME OVER : ( \nYour Score = ${this.scoreLabel.score}`);
       this.physics.pause();
@@ -199,6 +202,7 @@ class GameScene extends Phaser.Scene {
     }
     else{
       this.health -= 1;
+      info.setText(this.health);
     }
   }
 }
