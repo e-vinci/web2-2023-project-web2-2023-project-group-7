@@ -6,7 +6,7 @@ const ConnectionPage = () => {
 
   // Création de la structure de la page de connexion
   const connectionPageContent = document.createElement('div');
-  connectionPageContent.classList.add('connection-page-content');
+  connectionPageContent.classList.add('register-page-content');
   connectionPageContent.style.backgroundImage = `url(${ecranRanking})`; // Ajout de l'image comme fond d'écran
   connectionPageContent.style.backgroundSize = 'cover'; // Ajustez la taille de l'image selon vos besoins
   connectionPageContent.style.backgroundPosition = 'center'; // Ajustez la position de l'image selon vos besoins
@@ -22,7 +22,7 @@ const ConnectionPage = () => {
   form.classList.add('bg-light', 'p-4', 'rounded');
 
   const usernameLabel = document.createElement('label');
-  usernameLabel.textContent = 'Nom d\'utilisateur';
+  usernameLabel.textContent = 'username';
   usernameLabel.classList.add('form-label');
   const usernameInput = document.createElement('input');
   usernameInput.type = 'text';
@@ -30,7 +30,7 @@ const ConnectionPage = () => {
   usernameInput.id = 'username';
   usernameInput.name = 'username';
   usernameInput.required = true;
-  
+
   const emailLabel = document.createElement('label');
   emailLabel.textContent = 'Email';
   emailLabel.classList.add('form-label');
@@ -42,7 +42,7 @@ const ConnectionPage = () => {
   emailInput.required = true;
 
   const passwordLabel = document.createElement('label');
-  passwordLabel.textContent = 'Mot de passe';
+  passwordLabel.textContent = 'password';
   passwordLabel.classList.add('form-label');
   const passwordInput = document.createElement('input');
   passwordInput.type = 'password';
@@ -52,7 +52,7 @@ const ConnectionPage = () => {
   passwordInput.required = true;
 
   const confirmPasswordLabel = document.createElement('label');
-  confirmPasswordLabel.textContent = 'Confirmer le mot de passe';
+  confirmPasswordLabel.textContent = 'Confirmation password';
   confirmPasswordLabel.classList.add('form-label');
   const confirmPasswordInput = document.createElement('input');
   confirmPasswordInput.type = 'password';
@@ -62,7 +62,7 @@ const ConnectionPage = () => {
   confirmPasswordInput.required = true;
 
   const submitButton = document.createElement('button');
-  submitButton.textContent = 'Se connecter';
+  submitButton.textContent = 'register';
   submitButton.classList.add('btn', 'btn-primary', 'mt-3');
   submitButton.addEventListener('click', (event) => {
     event.preventDefault(); // Empêche la soumission du formulaire pour l'exemple
@@ -72,10 +72,19 @@ const ConnectionPage = () => {
     const confirmPassword = confirmPasswordInput.value;
 
     // Exemple : Validation basique des champs
-    if (username && password && confirmPassword && password === confirmPassword) {
-      alert('Connexion réussie!');
-      window.location.href = '/routes/users';
-      window.location.href = '/';
+    if (username  && password && confirmPassword && password === confirmPassword) {
+      alert('register complet!');
+      const response = await fetch(${process.env.API_BASE_URL}/auths/register, {
+        method: 'POST',
+        body: JSON.stringify({ username, password }),
+        mode: 'cors',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+    
+      //if (!response.ok) {throw new Error(fetch error : ${response.status} : ${response.statusText});}
+    
+      const authenticatedUser = await response.json();
 
     } else {
       alert('Veuillez remplir tous les champs et assurez-vous que les mots de passe correspondent.');
@@ -104,4 +113,4 @@ const ConnectionPage = () => {
   main.appendChild(connectionPageContent);
 };
 
-export default ConnectionPage;
+export default RegisterPage;
