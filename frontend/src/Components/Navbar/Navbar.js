@@ -12,45 +12,42 @@ import logo from '../../assets/logoHuman.png';
 const Navbar = () => {
   const navbarWrapper = document.querySelector('#navbarWrapper');
   const navbar = `
-  <nav class="navbar navbar-expand-lg navbar bg-dark navbar-dark fixed-top">
-        <div class="container-fluid">
-        <a class="navbar-brand" href="#" data-uri="/">
-          <img src="${logo}" alt="logo" style="width:50px;">
-          </a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#" data-uri="/">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" data-uri="/game">Game</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" data-uri="/ranking">Ranking</a>
-              </li>
-              <li class="nav-item dropdown ml-auto">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">connection</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#" data-uri="/loginPage">Login</a></li>
-                  <li><a class="dropdown-item" href="#" data-uri="/registerPage">Register</a></li>
-                </ul>
-              </li>  
-                     
-            </ul>
-          </div>
-        </div>
-      </nav>
+  height: 10%;
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+  <div class="container-fluid">
+
+    <!-- Links -->
+    <ul class="navbar-nav mr-auto"> 
+    <li class="nav-item">
+      <!-- Brand -->
+      <a class="navbar-brand" href="#" data-uri="/game">
+        <img src="${logo}" alt="logo" style="width:50px">
+      </a>
+      </li>
+      <!-- Links -->
+      <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="#" data-uri="/">Home</a>
+      </li>
+      <li class="nav-item">
+      <a class="nav-link" href="#" data-uri="/game">Game</a>
+      </li>
+      <li class="nav-item">
+      <a class="nav-link" href="#" data-uri="/ranking">Ranking</a>
+    </li>
+    </ul>
+
+    <!-- Dropdown -->
+    <ul class="navbar-nav ml-auto"> 
+    <li class="nav-item-right dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">connection</a>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#" data-uri="/loginPage">Login</a></li>
+      <li><a class="dropdown-item" href="#" data-uri="/registerPage">Register</a></li>
+    </ul>
+  </div><!-- /.container-fluid -->
+</nav>
+
+  
   `;
   navbarWrapper.innerHTML = navbar;
 };

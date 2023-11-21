@@ -5,6 +5,7 @@ let game;
 
 const GamePage = () => {
   const phaserGame = `
+  height: 90%; 
 <div id="gameDiv" class="d-flex justify-content-center my-3">
 </div>`;
 

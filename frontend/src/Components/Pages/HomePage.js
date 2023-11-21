@@ -4,6 +4,7 @@ import ecrandefondhomepage from '../../assets/Capture.png';
 
 const HomePage = () => {
   const main = document.querySelector('main');
+  
 
   // Création de la structure de la page d'accueil
   const homePageContent = document.createElement('div');
