@@ -57,7 +57,7 @@ const ConnectionPage = () => {
     try {
       
        // Utilisez votre propre chemin d'API au lieu de '/auths/register'
-       const response = await fetch('/api/register', {
+       const response = await fetch('api/auths/register', {
          method: 'POST',
          body: JSON.stringify(formData),
          mode: 'cors',
@@ -85,7 +85,7 @@ const ConnectionPage = () => {
        console.error('Registration failed:', error.message);
        
     }
-    // window.location.href = '/';
+     window.location.href = '/';
     
    });
 
