@@ -44,8 +44,7 @@ const ConnectionPage = () => {
   const submitButton = document.createElement('button');
   submitButton.textContent = 'Se connecter';
   submitButton.classList.add('btn', 'btn-primary', 'mt-3');
-  submitButton.addEventListener('click', (event) => {
-    event.preventDefault(); // Empêche la soumission du formulaire pour l'exemple
+  submitButton.addEventListener('click', () => {
     // Ajoutez ici la logique pour soumettre le formulaire de connexion
     const username = usernameInput.value;
     const password = passwordInput.value;
