@@ -1,10 +1,8 @@
 import Phaser from 'phaser';
 import ScoreLabel from './ScoreLabel';
-import BombSpawner from './BombSpawner';
+
 import skyAsset from '../../assets/sky.png';
 import platformAsset from '../../assets/platform.png';
-import starAsset from '../../assets/star.png';
-import bombAsset from '../../assets/bomb.png';
 import idleAsset from '../../assets/Samurai/Idle.png';
 import walkAsset from '../../assets/Samurai/Walk.png';
 import jumpAsset from '../../assets/Samurai/Jump.png';
@@ -15,8 +13,6 @@ const GROUND_KEY = 'ground';
 const IDLE_KEY = 'idle';
 const WALK_KEY = 'walk';
 const JUMP_KEY = 'jump';
-const STAR_KEY = 'star';
-const BOMB_KEY = 'bomb';
 const ATTACK_KEY = 'attack'
 let info;
 
@@ -27,17 +23,18 @@ class GameScene extends Phaser.Scene {
     this.bot = undefined;
     this.cursors = undefined;
     this.scoreLabel = undefined;
-    this.stars = undefined;
-    this.bombSpawner = undefined;
     this.gameOver = false;
-    this.health = 1000;
+    this.playerHealth = 10;
+    this.botHealth = 2;
+    this.previousBotHealth = this.botHealth;
+    this.previousCollisionTime = 0;
+    this.interval = 3000;
+    this.isCollisionDone = false;
   }
 
   preload() {
     this.load.image('sky', skyAsset);
     this.load.image(GROUND_KEY, platformAsset);
-    this.load.image(STAR_KEY, starAsset);
-    this.load.image(BOMB_KEY, bombAsset);
     this.load.image('health', healthAsset);
 
     this.load.spritesheet(IDLE_KEY, idleAsset, {
@@ -64,16 +61,10 @@ class GameScene extends Phaser.Scene {
     const platforms = this.createPlatforms();
     this.player = this.createPlayer();
     this.bot = this.createBot();
-    this.stars = this.createStars();
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
-    this.bombSpawner = new BombSpawner(this, BOMB_KEY);
-    const bombsGroup = this.bombSpawner.group;
-    this.physics.add.collider(this.stars, platforms);
+
     this.physics.add.collider(this.player, platforms);
     this.physics.add.collider(this.bot, platforms);
-    this.physics.add.collider(bombsGroup, platforms);
-    this.physics.add.collider(this.player, bombsGroup, this.hitBomb, null, this);
-    this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
     
     this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -91,6 +82,10 @@ class GameScene extends Phaser.Scene {
     }
 
     this.physics.world.wrap(this.bot, 0, false);
+
+    if (this.physics.overlap(this.player, this.bot)) {
+      this.handlePlayerBotCollision();
+    }
     
     if (this.cursors.left.isDown) {
       this.player.setVelocityX(-300);
@@ -100,7 +95,7 @@ class GameScene extends Phaser.Scene {
       this.player.setVelocityX(300);
       this.player.anims.play('right', true);
       this.player.flipX = false;
-    } else {
+    } else if(!this.physics.overlap(this.player, this.bot)){
       this.player.setVelocityX(0);
       this.player.anims.play('turn', true);
     }
@@ -127,7 +122,7 @@ class GameScene extends Phaser.Scene {
 
   createHealth(){
     const hp = this.add.image(40, 100,'health');
-    info = this.add.text(60, 100, this.health);
+    info = this.add.text(60, 100, this.playerHealth);
     return hp;
   }
 
@@ -142,22 +137,26 @@ class GameScene extends Phaser.Scene {
       frameRate: 20,
       repeat: -1,
     });
+    
     this.anims.create({
       key: 'attack',
       frames: this.anims.generateFrameNumbers(ATTACK_KEY, { start: 0, end: 8}),
       frameRate: 5,
-      repat: -1,
+      repeat: 0,
     });
 
+    bot.setVelocityX(-200);
+    bot.flipX = true;
     this.time.addEvent({
-      delay: 2000,
+      delay: 50,
       loop: true,
       callback: () => {
-        bot.flipX = true;
-        const velocityX = -200;
-        bot.setVelocityX(velocityX);
-        if(velocityX < 0) {
+        if(bot.body.velocity.x < 0) {
           bot.anims.play('avance', true);
+        } else if(!this.physics.overlap(this.bot, this.player)) {
+          bot.setVelocityX(-200);
+        } else if (this.physics.overlap(this.bot, this.player)) {
+          this.handlePlayerBotCollision();
         } else {
           bot.anims.play('turn', true);
         }
@@ -166,13 +165,7 @@ class GameScene extends Phaser.Scene {
 
     bot.setCollideWorldBounds(true);
     bot.body.onWorldBounds = true;
-
-    this.physics.add.collider(bot, this.player, () => {
-      this.add.text(100, 100, 'bot a touché joueur');
-      bot.anims.play('attack', true);
-      bot.setVelocityX(0);
-      
-    });
+ 
 
     this.physics.world.on('worldbounds', (body) => {
       if(body.gameObject === bot) {
@@ -216,46 +209,67 @@ class GameScene extends Phaser.Scene {
       key: 'attack',
       frames: this.anims.generateFrameNumbers(ATTACK_KEY, { start: 0, end: 8}),
       frameRate: 5,
-      repeat: -1,
+      repeat: 0,
     });
 
     player.setCollideWorldBounds(true);
     player.body.onWorldBounds = true;
 
-    this.physics.add.collider(player, this.bot, () => {
-      this.add.text(100, 100, 'joueur a touché bot');
-      player.anims.play('attack', true);
-      player.setVelocityX(0);
-    });
-
     return player;
   }
 
-  createStars() {
-    const stars = this.physics.add.group({
-      key: STAR_KEY,
-      repeat: 11,
-      setXY: { x: 12, y: 0, stepX: 70 },
-    });
+  handlePlayerBotCollision() {
+    
+    const timer = this.time.now;
+    // Use an interval that lets the animation to be done only once every time and deducting the health only after that
+    if(timer - this.previousCollisionTime > this.interval){
+      this.isCollisionDone = false;
+      this.previousCollisionTime = timer;
+      // Detect if animation has already been done during the interval, if yes, don't repeat and wait next time;
+      if(!this.isCollisionDone){
+        this.bot.setVelocityX(0);
+        this.player.setVelocityX(0);
+        this.player.anims.play('attack');
+        this.bot.anims.play('attack');
+        
+        this.time.addEvent({
+          delay: 1,
+          callback: () => {
+            this.pertePV();
+            this.isCollisionDone = true;
+          }
+        })
 
-    stars.children.iterate((child) => {
-      child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-    });
-
-    return stars;
-  }
-
-  collectStar(player, star) {
-    star.disableBody(true, true);
-    this.scoreLabel.add(10);
-    if (this.stars.countActive(true) === 0) {
-      //  A new batch of stars to collect
-      this.stars.children.iterate((child) => {
-        child.enableBody(true, child.x, 0, true, true);
-      });
+      }
     }
-
   }
+
+  pertePV(){
+    this.botHealth -= 1;
+    this.playerHealth -= 1;
+    this.scoreLabel.add(100);
+
+    if(this.playerHealth <1){
+      this.player.disableBody(true, true);
+      this.scoreLabel.setText(`GAME OVER : ( \nYour Score = ${this.scoreLabel.score}`);
+
+      this.player.setTint(0xff0000);
+
+      this.gameOver = true;
+      
+    } else if(this.botHealth <1){
+      this.bot.disableBody(true, true);
+      
+      setTimeout(() => {
+        this.bot.enableBody(true, 600, 470, true, true);
+        // increments bot health by 1 each time it respawns making it harder
+        this.botHealth = this.previousBotHealth + 1;
+        this.previousBotHealth = this.botHealth;
+      }, 2000);
+    }
+    info.setText(this.playerHealth);
+  }
+
 
   createScoreLabel(x, y, score) {
     const style = { fontSize: '32px', fill: '#000' };
@@ -266,23 +280,6 @@ class GameScene extends Phaser.Scene {
     return label;
   }
 
-  hitBomb(player) {
-    
-    if(this.health <=1){
-      this.scoreLabel.setText(`GAME OVER : ( \nYour Score = ${this.scoreLabel.score}`);
-      this.physics.pause();
-
-      player.setTint(0xff0000);
-
-      player.anims.play('turn');
-
-      this.gameOver = true;
-    }
-    else{
-      this.health -= 1;
-      info.setText(this.health);
-    }
-  }
 }
 
 export default GameScene;
