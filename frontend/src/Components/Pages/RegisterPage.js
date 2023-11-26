@@ -55,16 +55,16 @@ const ConnectionPage = () => {
   submitButton.textContent = 'register';
   submitButton.classList.add('btn', 'btn-primary', 'mt-3');
   submitButton.addEventListener('click', (event) => {
-    event.preventDefault(); // Empêche la soumission du formulaire pour l'exemple
-    // Ajoutez ici la logique pour soumettre le formulaire de connexion
-    const username = usernameInput.value;
-    const password = passwordInput.value;
-    const confirmPassword = confirmPasswordInput.value;
+    
+  // Ajoutez ici la logique pour soumettre le formulaire de connexion
+  const username = usernameInput.value;
+  const password = passwordInput.value;
+  const confirmPassword = confirmPasswordInput.value;
 
     // Exemple : Validation basique des champs
     if (username  && password && confirmPassword && password === confirmPassword) {
       alert('register complet!');
-      const response = await fetch(${process.env.API_BASE_URL}/auths/register, {
+      /*const response = await fetch(`${process.env.API_BASE_URL}/auths/register`, {
         method: 'POST',
         body: JSON.stringify({ username, password }),
         mode: 'cors',
@@ -74,7 +74,7 @@ const ConnectionPage = () => {
     
       //if (!response.ok) {throw new Error(fetch error : ${response.status} : ${response.statusText});}
     
-      const authenticatedUser = await response.json();
+      const authenticatedUser = await response.json();*/
 
     } else {
       alert('Veuillez remplir tous les champs et assurez-vous que les mots de passe correspondent.');
