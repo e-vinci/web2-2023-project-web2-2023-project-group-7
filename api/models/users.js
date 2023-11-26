@@ -40,6 +40,7 @@ async function login(username, password) {
 }
 
 async function register(username, password) {
+  console.log('ffffffffffffffffffffffffffff');
   const userFound = readOneUserFromUsername(username);
   if (userFound) return undefined;
 
