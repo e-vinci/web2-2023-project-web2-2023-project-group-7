@@ -9,6 +9,7 @@ import idleAsset from '../../assets/Samurai/Idle.png';
 import walkAsset from '../../assets/Samurai/Walk.png';
 import jumpAsset from '../../assets/Samurai/Jump.png';
 import healthAsset from '../../assets/health.png';
+import attackAsset from '../../assets/Samurai/Attack_1.png';
 
 const GROUND_KEY = 'ground';
 const IDLE_KEY = 'idle';
@@ -16,18 +17,20 @@ const WALK_KEY = 'walk';
 const JUMP_KEY = 'jump';
 const STAR_KEY = 'star';
 const BOMB_KEY = 'bomb';
+const ATTACK_KEY = 'attack'
 let info;
 
 class GameScene extends Phaser.Scene {
   constructor() {
     super('game-scene');
     this.player = undefined;
+    this.bot = undefined;
     this.cursors = undefined;
     this.scoreLabel = undefined;
     this.stars = undefined;
     this.bombSpawner = undefined;
     this.gameOver = false;
-    this.health = 3;
+    this.health = 1000;
   }
 
   preload() {
@@ -49,6 +52,10 @@ class GameScene extends Phaser.Scene {
       frameWidth: 128,
       frameHeight: 128,
     });
+    this.load.spritesheet(ATTACK_KEY, attackAsset, {
+      frameWidth: 128,
+      frameHeight: 128,
+    });
   }
 
   create() {
@@ -56,17 +63,24 @@ class GameScene extends Phaser.Scene {
     this.createHealth();
     const platforms = this.createPlatforms();
     this.player = this.createPlayer();
+    this.bot = this.createBot();
     this.stars = this.createStars();
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
     this.bombSpawner = new BombSpawner(this, BOMB_KEY);
     const bombsGroup = this.bombSpawner.group;
     this.physics.add.collider(this.stars, platforms);
     this.physics.add.collider(this.player, platforms);
+    this.physics.add.collider(this.bot, platforms);
     this.physics.add.collider(bombsGroup, platforms);
     this.physics.add.collider(this.player, bombsGroup, this.hitBomb, null, this);
     this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
+    
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    this.physics.world.setBoundsCollision(true, true, true, true);
+
+    this.debugShowBody = true;
+    
     /* The Collider takes two objects and tests for collision and performs separation against them.
     Note that we could call a callback in case of collision... */
   }
@@ -76,19 +90,23 @@ class GameScene extends Phaser.Scene {
       return;
     }
 
+    this.physics.world.wrap(this.bot, 0, false);
+    
     if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-160);
+      this.player.setVelocityX(-300);
       this.player.anims.play('left', true);
+      this.player.flipX = true;
     } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(160);
+      this.player.setVelocityX(300);
       this.player.anims.play('right', true);
+      this.player.flipX = false;
     } else {
       this.player.setVelocityX(0);
       this.player.anims.play('turn', true);
     }
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-330);
+      this.player.setVelocityY(-400);
     }
 
   }
@@ -108,16 +126,68 @@ class GameScene extends Phaser.Scene {
   }
 
   createHealth(){
-    const hp = this.add.image(70, 100,'health');
-    info = this.add.text(40, 100, this.health);
+    const hp = this.add.image(40, 100,'health');
+    info = this.add.text(60, 100, this.health);
     return hp;
   }
 
+  createBot() {
+    const bot = this.physics.add.sprite(600, 470, IDLE_KEY);
+    bot.setBounce(0.2);
+    bot.body.setSize(67,74,true).setOffset(20, 54);
+
+    this.anims.create({
+      key: 'avance',
+      frames: this.anims.generateFrameNumbers(WALK_KEY, { start: 0, end: 8}),
+      frameRate: 20,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'attack',
+      frames: this.anims.generateFrameNumbers(ATTACK_KEY, { start: 0, end: 8}),
+      frameRate: 5,
+      repat: -1,
+    });
+
+    this.time.addEvent({
+      delay: 2000,
+      loop: true,
+      callback: () => {
+        bot.flipX = true;
+        const velocityX = -200;
+        bot.setVelocityX(velocityX);
+        if(velocityX < 0) {
+          bot.anims.play('avance', true);
+        } else {
+          bot.anims.play('turn', true);
+        }
+      }
+    });
+
+    bot.setCollideWorldBounds(true);
+    bot.body.onWorldBounds = true;
+
+    this.physics.add.collider(bot, this.player, () => {
+      this.add.text(100, 100, 'bot a touché joueur');
+      bot.anims.play('attack', true);
+      bot.setVelocityX(0);
+      
+    });
+
+    this.physics.world.on('worldbounds', (body) => {
+      if(body.gameObject === bot) {
+        bot.anims.play('turn', true);
+        bot.setVelocityX(0);
+      }
+    })
+
+    return bot;
+  }
+
   createPlayer() {
-    const player = this.physics.add.sprite(100, 450, IDLE_KEY);
+    const player = this.physics.add.sprite(140, 470, IDLE_KEY);
     player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
-    player.body.setSize(67,74,false).setOffset(0,54);
+    player.body.setSize(67,74,true).setOffset(20,54);
     /* The 'left' animation uses frames 0, 1, 2 and 3 and runs at 10 frames per second.
     The 'repeat -1' value tells the animation to loop.
     */
@@ -143,10 +213,19 @@ class GameScene extends Phaser.Scene {
     });
 
     this.anims.create({
-      key: 'up',
-      frames: this.anims.generateFrameNumbers(JUMP_KEY, { start: 0, end: 8 }),
-      frameRate: 20,
+      key: 'attack',
+      frames: this.anims.generateFrameNumbers(ATTACK_KEY, { start: 0, end: 8}),
+      frameRate: 5,
       repeat: -1,
+    });
+
+    player.setCollideWorldBounds(true);
+    player.body.onWorldBounds = true;
+
+    this.physics.add.collider(player, this.bot, () => {
+      this.add.text(100, 100, 'joueur a touché bot');
+      player.anims.play('attack', true);
+      player.setVelocityX(0);
     });
 
     return player;
@@ -176,7 +255,6 @@ class GameScene extends Phaser.Scene {
       });
     }
 
-    this.bombSpawner.spawn(player.x);
   }
 
   createScoreLabel(x, y, score) {
