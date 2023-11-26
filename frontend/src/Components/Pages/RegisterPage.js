@@ -36,23 +36,27 @@ const ConnectionPage = () => {
     return { label, input };
   };
   
+  
 
   const username = createFormElement('Username', 'text', 'username');
   const password = createFormElement('Password', 'password', 'password');
   const confirmPassword = createFormElement('Confirm Password', 'password', 'confirmPassword');
-
   const submitButton = document.createElement('button');
   submitButton.textContent = 'Register';
   submitButton.classList.add('btn', 'btn-primary', 'mt-3');
   submitButton.addEventListener('click', async () => {
-    
-     
-   
+
+
+
     const formData = {
        username: username.input.value,
        password: password.input.value,
        confirmPassword: confirmPassword.input.value,
     };
+    if (confirmPassword !== password) {
+      alert('register rater ');
+      window.location.href = '/';
+    }
     
     try {
       
@@ -65,14 +69,11 @@ const ConnectionPage = () => {
          headers: { 'Content-Type': 'application/json' }
          
        });
-       
-       
-       // console.log("gggggggggggggggggggggggggggggggggggggggggggg")
       
         if (!response.ok) {
           throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
         }
-       
+        window.location.href = '/';
        
        // const registeredUser = await response.json();
         // console.log('Registered user:', registeredUser);
@@ -85,9 +86,9 @@ const ConnectionPage = () => {
        console.error('Registration failed:', error.message);
        
     }
-     window.location.href = '/';
-    
+    window.location.href = '/';
    });
+  
 
   [username, password, confirmPassword].forEach(({ label, input }) => {
     form.appendChild(label);
