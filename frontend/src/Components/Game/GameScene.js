@@ -5,12 +5,18 @@ import skyAsset from '../../assets/sky.png';
 import platformAsset from '../../assets/platform.png';
 import starAsset from '../../assets/star.png';
 import bombAsset from '../../assets/bomb.png';
-import dudeAsset from '../../assets/dude.png';
+import idleAsset from '../../assets/Samurai/Idle.png';
+import walkAsset from '../../assets/Samurai/Walk.png';
+import jumpAsset from '../../assets/Samurai/Jump.png';
+import healthAsset from '../../assets/health.png';
 
 const GROUND_KEY = 'ground';
-const DUDE_KEY = 'dude';
+const IDLE_KEY = 'idle';
+const WALK_KEY = 'walk';
+const JUMP_KEY = 'jump';
 const STAR_KEY = 'star';
 const BOMB_KEY = 'bomb';
+let info;
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -21,6 +27,7 @@ class GameScene extends Phaser.Scene {
     this.stars = undefined;
     this.bombSpawner = undefined;
     this.gameOver = false;
+    this.health = 3;
   }
 
   preload() {
@@ -28,15 +35,25 @@ class GameScene extends Phaser.Scene {
     this.load.image(GROUND_KEY, platformAsset);
     this.load.image(STAR_KEY, starAsset);
     this.load.image(BOMB_KEY, bombAsset);
+    this.load.image('health', healthAsset);
 
-    this.load.spritesheet(DUDE_KEY, dudeAsset, {
-      frameWidth: 32,
-      frameHeight: 48,
+    this.load.spritesheet(IDLE_KEY, idleAsset, {
+      frameWidth: 128,
+      frameHeight: 128,
+    });
+    this.load.spritesheet(WALK_KEY, walkAsset, {
+      frameWidth: 128,
+      frameHeight: 128,
+    });
+    this.load.spritesheet(JUMP_KEY, jumpAsset, {
+      frameWidth: 128,
+      frameHeight: 128,
     });
   }
 
   create() {
     this.add.image(400, 300, 'sky');
+    this.createHealth();
     const platforms = this.createPlatforms();
     this.player = this.createPlayer();
     this.stars = this.createStars();
@@ -67,12 +84,13 @@ class GameScene extends Phaser.Scene {
       this.player.anims.play('right', true);
     } else {
       this.player.setVelocityX(0);
-      this.player.anims.play('turn');
+      this.player.anims.play('turn', true);
     }
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-330);
     }
+
   }
 
   createPlatforms() {
@@ -89,30 +107,45 @@ class GameScene extends Phaser.Scene {
     return platforms;
   }
 
+  createHealth(){
+    const hp = this.add.image(70, 100,'health');
+    info = this.add.text(40, 100, this.health);
+    return hp;
+  }
+
   createPlayer() {
-    const player = this.physics.add.sprite(100, 450, DUDE_KEY);
+    const player = this.physics.add.sprite(100, 450, IDLE_KEY);
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
+    player.body.setSize(67,74,false).setOffset(0,54);
     /* The 'left' animation uses frames 0, 1, 2 and 3 and runs at 10 frames per second.
     The 'repeat -1' value tells the animation to loop.
     */
     this.anims.create({
       key: 'left',
-      frames: this.anims.generateFrameNumbers(DUDE_KEY, { start: 0, end: 3 }),
-      frameRate: 10,
+      frames: this.anims.generateFrameNumbers(WALK_KEY, { start: 0, end: 8 }),
+      frameRate: 20,
       repeat: -1,
     });
 
     this.anims.create({
       key: 'turn',
-      frames: [{ key: DUDE_KEY, frame: 4 }],
+      frames: this.anims.generateFrameNumbers(IDLE_KEY, { start: 0, end: 5 }),
       frameRate: 20,
+      repeat: -1,
     });
 
     this.anims.create({
       key: 'right',
-      frames: this.anims.generateFrameNumbers(DUDE_KEY, { start: 5, end: 8 }),
-      frameRate: 10,
+      frames: this.anims.generateFrameNumbers(WALK_KEY, { start: 0, end: 8 }),
+      frameRate: 20,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'up',
+      frames: this.anims.generateFrameNumbers(JUMP_KEY, { start: 0, end: 8 }),
+      frameRate: 20,
       repeat: -1,
     });
 
@@ -156,14 +189,21 @@ class GameScene extends Phaser.Scene {
   }
 
   hitBomb(player) {
-    this.scoreLabel.setText(`GAME OVER : ( \nYour Score = ${this.scoreLabel.score}`);
-    this.physics.pause();
+    
+    if(this.health <=1){
+      this.scoreLabel.setText(`GAME OVER : ( \nYour Score = ${this.scoreLabel.score}`);
+      this.physics.pause();
 
-    player.setTint(0xff0000);
+      player.setTint(0xff0000);
 
-    player.anims.play('turn');
+      player.anims.play('turn');
 
-    this.gameOver = true;
+      this.gameOver = true;
+    }
+    else{
+      this.health -= 1;
+      info.setText(this.health);
+    }
   }
 }
 
