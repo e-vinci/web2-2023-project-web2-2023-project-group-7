@@ -4,16 +4,15 @@ import ecranRanking from '../../assets/Capture1.png';
 const ConnectionPage = () => {
   const main = document.querySelector('main');
 
-  // Création de la structure de la page de connexion
   const connectionPageContent = document.createElement('div');
-  connectionPageContent.classList.add('connection-page-content');
-  connectionPageContent.style.backgroundImage = `url(${ecranRanking})`; // Ajout de l'image comme fond d'écran
-  connectionPageContent.style.backgroundSize = 'cover'; // Ajustez la taille de l'image selon vos besoins
-  connectionPageContent.style.backgroundPosition = 'center'; // Ajustez la position de l'image selon vos besoins
-  connectionPageContent.style.height = '100vh'; // Utilisation de la hauteur de la fenêtre pour occuper tout l'écran
-  connectionPageContent.style.display = 'flex'; // Utilisation de flexbox pour centrer le contenu
-  connectionPageContent.style.justifyContent = 'center'; // Centrage horizontal
-  connectionPageContent.style.alignItems = 'center'; // Centrage vertical
+  connectionPageContent.classList.add('register-page-content');
+  connectionPageContent.style.backgroundImage = `url(${ecranRanking})`;
+  connectionPageContent.style.backgroundSize = 'cover';
+  connectionPageContent.style.backgroundPosition = 'center';
+  connectionPageContent.style.height = '100vh';
+  connectionPageContent.style.display = 'flex';
+  connectionPageContent.style.justifyContent = 'center';
+  connectionPageContent.style.alignItems = 'center';
 
   const formContainer = document.createElement('div');
   formContainer.classList.add('container', 'col-md-4');
@@ -21,60 +20,65 @@ const ConnectionPage = () => {
   const form = document.createElement('form');
   form.classList.add('bg-light', 'p-4', 'rounded');
 
-  const usernameLabel = document.createElement('label');
-  usernameLabel.textContent = 'Nom d\'utilisateur';
-  usernameLabel.classList.add('form-label');
-  const usernameInput = document.createElement('input');
-  usernameInput.type = 'text';
-  usernameInput.classList.add('form-control');
-  usernameInput.id = 'username';
-  usernameInput.name = 'username';
-  usernameInput.required = true;
+  const createFormElement = (labelText, inputType, inputName) => {
+    const label = document.createElement('label');
+    label.textContent = labelText;
+    label.classList.add('form-label');
 
-  const passwordLabel = document.createElement('label');
-  passwordLabel.textContent = 'Mot de passe';
-  passwordLabel.classList.add('form-label');
-  const passwordInput = document.createElement('input');
-  passwordInput.type = 'password';
-  passwordInput.classList.add('form-control');
-  passwordInput.id = 'password';
-  passwordInput.name = 'password';
-  passwordInput.required = true;
+    const input = document.createElement('input');
+    input.type = inputType;
+    input.classList.add('form-control');
+    input.id = inputName;
+    input.name = inputName;
+    input.required = true;
 
+    return { label, input };
+  };
+
+  const username = createFormElement('Username', 'text', 'username');
+  const password = createFormElement('Password', 'password', 'password');
   const submitButton = document.createElement('button');
-  submitButton.textContent = 'Se connecter';
+  submitButton.textContent = 'Login';
   submitButton.classList.add('btn', 'btn-primary', 'mt-3');
-  submitButton.addEventListener('click', () => {
-    // Ajoutez ici la logique pour soumettre le formulaire de connexion
-    const username = usernameInput.value;
-    const password = passwordInput.value;
+  submitButton.addEventListener('click', async () => {
+    const formData = {
+      username: username.input.value,
+      password: password.input.value,
+    };
 
-    // Exemple : Validation basique des champs
-    if (username && password) {
-      alert('Connexion réussie!');
+    try {
+      const response = await fetch('api/auths/login', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        mode: 'cors',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
+      }
+
+      // Rediriger ici après une connexion réussie
       window.location.href = '/';
-    } else {
-      alert('Veuillez remplir tous les champs.');
+    } catch (error) {
+      console.error('Login failed:', error.message);
     }
   });
 
-  // Ajout des éléments au formulaire
-  form.appendChild(usernameLabel);
-  form.appendChild(usernameInput);
-  form.appendChild(passwordLabel);
-  form.appendChild(passwordInput);
+  [username, password].forEach(({ label, input }) => {
+    form.appendChild(label);
+    form.appendChild(input);
+  });
+
   form.appendChild(submitButton);
 
-  // Ajout du formulaire au conteneur
   formContainer.appendChild(form);
 
-  // Ajout du conteneur du formulaire à la page de connexion
   connectionPageContent.appendChild(formContainer);
 
-  // Effacement du contenu précédent du main
   main.innerHTML = '';
 
-  // Ajout de la nouvelle structure à la page principale
   main.appendChild(connectionPageContent);
 };
 
