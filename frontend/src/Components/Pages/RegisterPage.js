@@ -55,7 +55,7 @@ const ConnectionPage = () => {
     // Vérification si les mots de passe correspondent
     if (confirmPassword.input.value !== password.input.value) {
       alert('Passwords do not match');
-      Navigate('/');
+      Navigate('/registerPage');
       event.preventDefault();
       return;
     }
