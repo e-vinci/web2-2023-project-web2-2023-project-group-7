@@ -2,12 +2,12 @@
 import ecranRanking from '../../assets/Capture1.png';
 import Navigate from '../Router/Navigate';
 
-// Définition du composant ConnectionPage
+// Definition of the ConnectionPage component
 const ConnectionPage = () => {
-  // Sélection de l'élément <main> dans le document HTML
+  // Select the <main> element in the HTML document
   const main = document.querySelector('main');
 
-  // Création d'un conteneur pour la page de connexion
+  // Create a container for the connection page
   const connectionPageContent = document.createElement('div');
   connectionPageContent.classList.add('register-page-content');
   connectionPageContent.style.backgroundImage = `url(${ecranRanking})`;
@@ -18,15 +18,15 @@ const ConnectionPage = () => {
   connectionPageContent.style.justifyContent = 'center';
   connectionPageContent.style.alignItems = 'center';
 
-  // Création d'un conteneur pour le formulaire
+  // Create a container for the form
   const formContainer = document.createElement('div');
   formContainer.classList.add('container', 'col-md-4');
 
-  // Création du formulaire
+  // Create the form
   const form = document.createElement('form');
   form.classList.add('bg-light', 'p-4', 'rounded');
 
-  // Fonction utilitaire pour créer des éléments de formulaire
+  // Utility function to create form elements
   const createFormElement = (labelText, inputType, inputName) => {
     const label = document.createElement('label');
     label.textContent = labelText;
@@ -42,78 +42,77 @@ const ConnectionPage = () => {
     return { label, input };
   };
 
-  // Création des champs du formulaire
+  // Create form fields
   const username = createFormElement('Username', 'text', 'username');
   const password = createFormElement('Password', 'password', 'password');
   const confirmPassword = createFormElement('Confirm Password', 'password', 'confirmPassword');
   const submitButton = document.createElement('button');
   submitButton.textContent = 'Register';
 
-  // Configuration du bouton de soumission
+  // Configure the submit button
   submitButton.classList.add('btn', 'btn-primary', 'mt-3');
   form.addEventListener('submit', async (event) => {
-    // Vérification si les mots de passe correspondent
+    event.preventDefault();
+    // Check if passwords match
     if (confirmPassword.input.value !== password.input.value) {
       alert('Passwords do not match');
-      Navigate('/registerPage');
-      event.preventDefault();
+      ConnectionPage();
       return;
     }
 
-    // Construction de l'objet FormData à partir des valeurs du formulaire
+    // Build the FormData object from the form values
     const formData = {
       username: username.input.value,
       password: password.input.value,
-      confirmPassword: confirmPassword.input.value,
     };
 
     try {
-      // Envoi de la requête POST vers l'API d'enregistrement
+      // Send POST request to the registration API
       const response = await fetch('api/auths/register', {
         method: 'POST',
         body: JSON.stringify(formData),
-        mode: 'cors',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' }
       });
+      event.preventDefault();
+      Navigate('/');
 
-      // Gestion des erreurs de requête
+      // Handle request errors
       if (!response.ok) {
         throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
       }
 
-      // Redirection vers la page d'accueil après l'enregistrement
+      // Redirect to the home page after registration
       Navigate('/');
-      event.preventDefault();
+
     } catch (error) {
       console.error('Registration failed:', error.message);
     }
 
-    // Redirection vers la page d'accueil (à nouveau)
+    // Redirect to the home page (again)
     Navigate('/');
   });
 
-  // Ajout des champs au formulaire
+  // Add fields to the form
   [username, password, confirmPassword].forEach(({ label, input }) => {
     form.appendChild(label);
     form.appendChild(input);
   });
 
-  // Ajout du bouton de soumission au formulaire
+  // Add the submit button to the form
   form.appendChild(submitButton);
 
-  // Ajout du formulaire au conteneur du formulaire
+  // Add the form to the form container
   formContainer.appendChild(form);
 
-  // Ajout du conteneur du formulaire à la page de connexion
+  // Add the form container to the connection page
   connectionPageContent.appendChild(formContainer);
 
-  // Effacement du contenu actuel de <main>
+  // Clear the current content of <main>
   main.innerHTML = '';
 
-  // Ajout de la page de connexion à <main>
+  // Add the connection page to <main>
   main.appendChild(connectionPageContent);
 };
 
-// Exportation du composant ConnectionPage
+// Export the ConnectionPage component
 export default ConnectionPage;

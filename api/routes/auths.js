@@ -12,8 +12,8 @@ router.post('/register', async (req, res) => {
   const authenticatedUser = await register(username, password);
 
   if (!authenticatedUser) return res.sendStatus(409); // 409 Conflict
-  req.session.username = authenticatedUser.username;
-  req.session.token = authenticatedUser.token;
+  // req.session.username = authenticatedUser.username;
+  // req.session.token = authenticatedUser.token;
   return res.json(authenticatedUser);
 });
 
