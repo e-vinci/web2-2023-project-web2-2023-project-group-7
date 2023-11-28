@@ -47,5 +47,4 @@ const HomePage = () => {
   // Ajout de la nouvelle structure à la page principale
   main.appendChild(homePageContent);
 };
-
 export default HomePage;
