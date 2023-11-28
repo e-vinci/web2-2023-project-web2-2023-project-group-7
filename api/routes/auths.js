@@ -27,8 +27,8 @@ router.post('/login', async (req, res) => {
   const authenticatedUser = await login(username, password);
 
   if (!authenticatedUser) return res.sendStatus(401); // 401 Unauthorized
-  req.session.username = authenticatedUser.username;
-  req.session.token = authenticatedUser.token;
+  // req.session.username = authenticatedUser.username;
+  // req.session.token = authenticatedUser.token;
   return res.json(authenticatedUser);
 });
 /* Logout a user */

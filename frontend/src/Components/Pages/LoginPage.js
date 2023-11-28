@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 import ecranRanking from '../../assets/Capture1.png';
+import Navigate from '../Router/Navigate';
 
 const ConnectionPage = () => {
   const main = document.querySelector('main');
@@ -40,7 +41,8 @@ const ConnectionPage = () => {
   const submitButton = document.createElement('button');
   submitButton.textContent = 'Login';
   submitButton.classList.add('btn', 'btn-primary', 'mt-3');
-  submitButton.addEventListener('click', async () => {
+  submitButton.addEventListener('click', async (event) => {
+    event.preventDefault();
     const formData = {
       username: username.input.value,
       password: password.input.value,
@@ -50,10 +52,9 @@ const ConnectionPage = () => {
       const response = await fetch('api/auths/login', {
         method: 'POST',
         body: JSON.stringify(formData),
-        mode: 'cors',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' }
       });
+      Navigate('/');
 
       if (!response.ok) {
         throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
