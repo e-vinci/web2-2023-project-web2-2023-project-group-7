@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-unresolved, no-unused-vars
+import { register } from "jwt-api-boilerplate/models/users";
 // eslint-disable-next-line import/no-unresolved
 import ecranRanking from '../../assets/Capture1.png';
 import Navigate from '../Router/Navigate';
@@ -57,7 +59,10 @@ const ConnectionPage = () => {
       Navigate('/');
 
       if (!response.ok) {
+        alert('Passwords do not match');
+        ConnectionPage();
         throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
+        
       }
 
       // Rediriger ici après une connexion réussie
