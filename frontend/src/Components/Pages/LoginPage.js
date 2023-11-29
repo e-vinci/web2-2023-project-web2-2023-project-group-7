@@ -1,7 +1,5 @@
-// eslint-disable-next-line import/no-unresolved, no-unused-vars
-import { register } from "jwt-api-boilerplate/models/users";
-// eslint-disable-next-line import/no-unresolved
 import ecranRanking from '../../assets/Capture1.png';
+// eslint-disable-next-line import/no-unresolved, no-unused-vars
 import Navigate from '../Router/Navigate';
 
 const ConnectionPage = () => {
