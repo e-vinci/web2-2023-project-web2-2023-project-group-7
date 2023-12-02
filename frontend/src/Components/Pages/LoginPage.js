@@ -62,9 +62,7 @@ const ConnectionPage = () => {
         throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
         
       }
-
-      // Rediriger ici après une connexion réussie
-      window.location.href = '/';
+      Navigate('/');
     } catch (error) {
       console.error('Login failed:', error.message);
     }

@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { Navbar as BootstrapNavbar } from 'bootstrap';
+
 import logo from '../../assets/logoHuman.png';
 
 /**
@@ -35,6 +36,14 @@ const Navbar = () => {
       <a class="nav-link" href="#" data-uri="/ranking">Ranking</a>
     </li>
     </ul>
+    <!-- Dropdown -->
+    <ul class="navbar-nav ml-auto"> 
+    <li class="nav-item-right dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">${undefined}</a>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#" data-uri="/logout">logout</a></li>
+    </ul>
+  </div><!-- /.container-fluid -->
 
     <!-- Dropdown -->
     <ul class="navbar-nav ml-auto"> 
