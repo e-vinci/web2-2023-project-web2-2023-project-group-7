@@ -1,12 +1,13 @@
 import Phaser from 'phaser';
 import ScoreLabel from './ScoreLabel';
-
+import EnemySpawner from './EnemySpawner';
 import skyAsset from '../../assets/bosque_tenebre.jpg';
 import platformAsset from '../../assets/platform.png';
+import healthAsset from '../../assets/health.png';
+
 import idleAsset from '../../assets/Samurai/Idle.png';
 import walkAsset from '../../assets/Samurai/Walk.png';
 import jumpAsset from '../../assets/Samurai/Jump.png';
-import healthAsset from '../../assets/health.png';
 import attack1Asset from '../../assets/Samurai/Attack_1.png';
 import attack2Asset from '../../assets/Samurai/Attack_2.png';
 import attack3Asset from '../../assets/Samurai/Attack_3.png';
@@ -27,6 +28,8 @@ class GameScene extends Phaser.Scene {
     super('game-scene');
     this.player = undefined;
     this.bot = undefined;
+    this.bots = [];
+    this.enemySpawn = undefined;
     this.cursors = undefined;
     this.scoreLabel = undefined;
     this.gameOver = false;
@@ -41,7 +44,7 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('sky', skyAsset);
+    this.load.image('obscurity', skyAsset);
     this.load.image(GROUND_KEY, platformAsset);
     this.load.image('health', healthAsset);
 
@@ -72,15 +75,22 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(400, 300, 'sky');
+    this.add.image(400, 300, 'obscurity');
     this.createHealth();
     const platforms = this.createPlatforms();
     this.player = this.createPlayer();
+    this.enemySpawn = new EnemySpawner(this);
     this.bot = this.createBot();
+
+    for(let i = 0; i<3; i+=1){
+      this.bots.push(this.bot);
+    }
+
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
 
     this.physics.add.collider(this.player, platforms);
     this.physics.add.collider(this.bot, platforms);
+
     
     this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -157,17 +167,15 @@ class GameScene extends Phaser.Scene {
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-400);
     }
-
   }
 
   createPlatforms() {
     const platforms = this.physics.add.staticGroup();
 
     platforms
-      .create(400, 568, GROUND_KEY)
+      .create(400, 620, GROUND_KEY)
       .setScale(2)
       .refreshBody();
-
     
     return platforms;
   }
@@ -179,20 +187,16 @@ class GameScene extends Phaser.Scene {
     nbRequired = this.add.text(225,120, this.botHealth/this.playerDamage);
     return hp;
   }
+  
 
   createBot() {
     const bot = this.physics.add.sprite(600, 470, IDLE_KEY);
     bot.setBounce(0.2);
     bot.body.setSize(67,74,true).setOffset(20, 54);
-
     bot.setVelocityX(-200);
     bot.flipX = true;
 
-    bot.group = this.physics.add.group();
-    bot.group.add(bot);
-
-    this.physics.add.collider(bot.group, this.platforms);
-    
+    this.enemySpawn.spawn(bot);
 
     this.time.addEvent({
       delay: 50,
@@ -200,9 +204,9 @@ class GameScene extends Phaser.Scene {
       callback: () => {
         if(bot.body.velocity.x < 0) {
           bot.anims.play('walk', true);
-        } else if(!this.physics.overlap(this.bot, this.player)) {
+        } else if(!this.physics.overlap(bot, this.player)) {
           bot.setVelocityX(-200);
-        } else if (this.physics.overlap(this.bot, this.player)) {
+        } else if (this.physics.overlap(bot, this.player)) {
           this.handlePlayerBotCollision();
         } else {
           bot.anims.play('turn', true);
@@ -219,7 +223,7 @@ class GameScene extends Phaser.Scene {
         bot.anims.play('turn', true);
         bot.setVelocityX(0);
       }
-    })
+    });
 
     return bot;
   }
@@ -239,8 +243,7 @@ class GameScene extends Phaser.Scene {
   }
 
   handlePlayerBotCollision() {
-
-    
+  
     const timer = this.time.now;
     // Use an interval that lets the animation to be done only once every time and deducting the health only after that
     if(timer - this.previousCollisionTime > this.interval){
@@ -277,7 +280,6 @@ class GameScene extends Phaser.Scene {
 
   handleHealth(){
 
-
     this.botHealth -= this.playerDamage;
     this.playerHealth -= this.botDamage;
     this.scoreLabel.add(100);
@@ -293,14 +295,15 @@ class GameScene extends Phaser.Scene {
     } else if(this.botHealth <1){
       this.bot.disableBody(true, true);
       this.scoreLabel.add(this.previousBotHealth);
+      this.enemySpawn.spawn(this.bot);
       
       setTimeout(() => {
         this.bot.enableBody(true, 600, 470, true, true);
         // increments bot health by 1 each time it respawns making it harder
         this.botHealth = this.previousBotHealth + 1;
         this.playerHealth += 20;
-
         this.previousBotHealth = this.botHealth;
+
       }, 2000);
     }
     nbRequired.setText(this.botHealth/this.playerDamage);
