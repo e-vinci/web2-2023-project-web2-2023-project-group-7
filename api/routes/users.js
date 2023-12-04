@@ -1,19 +1,21 @@
+// code mort à supprimer
+
 const express = require('express');
-const {
+/* const {
   // login,
-  register,
+  // register,
   // readOneUserFromUsername,
 } = require('../models/users');
-// const { authorize, isAdmin } = require('../utils/auths');
+// const { authorize, isAdmin } = require('../utils/auths'); */
 
 const router = express.Router();
 
 /* GET users listing. */
-router.get('/', (req, res) => {
+/* router.get('/', (req, res) => {
   res.json({ users: [{ name: 'e-baron' }] });
 });
 // Route pour l'inscription
-router.post('/register', async (req, res) => {
+router.post('/registerg', async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -35,5 +37,5 @@ router.post('/register', async (req, res) => {
       message: 'Une erreur est survenue lors de l\'inscription',
     });
   }
-});
+}); */
 module.exports = router;
