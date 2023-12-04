@@ -1,10 +1,18 @@
 // eslint-disable-next-line import/no-unresolved
- import ecranRanking from '../../assets/Capture1.png';
+import ecranRanking from '../../assets/Capture1.png';
+import Navigate from '../Router/Navigate';
 
 
+// const { storeUser } = require('../../utils/connection');
+
+// Definition of the ConnectionPage component
 const ConnectionPage = () => {
+  let responseFetch =null;
+
+  // Select the <main> element in the HTML document
   const main = document.querySelector('main');
 
+  // Create a container for the connection page
   const connectionPageContent = document.createElement('div');
   connectionPageContent.classList.add('register-page-content');
   connectionPageContent.style.backgroundImage = `url(${ecranRanking})`;
@@ -15,12 +23,15 @@ const ConnectionPage = () => {
   connectionPageContent.style.justifyContent = 'center';
   connectionPageContent.style.alignItems = 'center';
 
+  // Create a container for the form
   const formContainer = document.createElement('div');
   formContainer.classList.add('container', 'col-md-4');
 
+  // Create the form
   const form = document.createElement('form');
   form.classList.add('bg-light', 'p-4', 'rounded');
 
+  // Utility function to create form elements
   const createFormElement = (labelText, inputType, inputName) => {
     const label = document.createElement('label');
     label.textContent = labelText;
@@ -35,75 +46,91 @@ const ConnectionPage = () => {
 
     return { label, input };
   };
-  
-  
 
+  // Create form fields
   const username = createFormElement('Username', 'text', 'username');
   const password = createFormElement('Password', 'password', 'password');
   const confirmPassword = createFormElement('Confirm Password', 'password', 'confirmPassword');
   const submitButton = document.createElement('button');
   submitButton.textContent = 'Register';
+
+  // Configure the submit button
   submitButton.classList.add('btn', 'btn-primary', 'mt-3');
-  submitButton.addEventListener('click', async () => {
-
-
-
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    // Check if passwords match
+    if (confirmPassword.input.value !== password.input.value) {
+      alert('Passwords do not match');
+      ConnectionPage();
+      return;
+    }
+ 
+    // Build the FormData object from the form values
     const formData = {
-       username: username.input.value,
-       password: password.input.value,
-       confirmPassword: confirmPassword.input.value,
+      username: username.input.value,
+      password: password.input.value,
     };
-    if (confirmPassword !== password) {
-      alert('register rater ');
-      window.location.href = '/';
-    }
-    
+   
     try {
-      
-       // Utilisez votre propre chemin d'API au lieu de '/auths/register'
-       const response = await fetch('api/auths/register', {
-         method: 'POST',
-         body: JSON.stringify(formData),
-         mode: 'cors',
-         credentials: 'include',
-         headers: { 'Content-Type': 'application/json' }
-         
-       });
-      
-        if (!response.ok) {
-          throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
-        }
-        window.location.href = '/';
-       
-       // const registeredUser = await response.json();
-        // console.log('Registered user:', registeredUser);
-       // console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
-       
-       document.write(response);
+      // Send POST request to the registration API
+      const response = await fetch('api/auths/register', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' }
+      })
+ 
+ 
+      responseFetch = await response.json()
+     
+      // Stocke le token dans le local storage (pas de cookie - choix du developpeur EIO)
+      // storeUser(responseFetch);
+      localStorage.setItem('project.usrnm',responseFetch.username)
+      localStorage.setItem('project.tkn',responseFetch.token)
+      // Gestion des erreurs
+      if (response.status ===400){
+        console.log(responseFetch.message)
+        localStorage.removeItem('project.usrnm')
+        localStorage.removeItem('project.tkn')
+      }
 
-       // Ajoutez ici la logique pour rediriger ou effectuer d'autres actions après l'inscription réussie
+      if (!response.ok) {
+        throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
+        // console.log(${response.status } +" : " + response.statusText);
+      }
+
+      // Redirige vers la home page
+      Navigate('/');
+      window.location.reload();
     } catch (error) {
-       console.error('Registration failed:', error.message);
-       
+      console.error('Registration failed:', error.message);
     }
-    window.location.href = '/';
-   });
-  
 
+  });
+
+  // Add fields to the form
   [username, password, confirmPassword].forEach(({ label, input }) => {
     form.appendChild(label);
     form.appendChild(input);
   });
 
+  // Add the submit button to the form
   form.appendChild(submitButton);
 
+  // Add the form to the form container
   formContainer.appendChild(form);
 
+  // Add the form container to the connection page
   connectionPageContent.appendChild(formContainer);
 
+  // Clear the current content of <main>
   main.innerHTML = '';
 
+  // Add the connection page to <main>
   main.appendChild(connectionPageContent);
 };
 
+
+
+
+// Export the ConnectionPage component
 export default ConnectionPage;
