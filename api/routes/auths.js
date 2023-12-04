@@ -8,19 +8,43 @@ router.post('/register', async (req, res) => {
   // console.log('fffffffffffffffffffffffffffffffff');
   const username = req?.body?.username?.length !== 0 ? req.body.username : undefined;
   const password = req?.body?.password?.length !== 0 ? req.body.password : undefined;
+
   if (!username || !password) return res.sendStatus(400); // 400 Bad Request
-  const authenticatedUser = await register(username, password);
+
+  const result = await register(username, password);
+
+  if (result === 'exist') {
+    return res.status(400).json({
+      message: 'L\'utilisateur existe déjà',
+    });
+  }
+
+  if (!result) return res.sendStatus(409); // 409 Conflict
+
+  return res.json(result);
+});
+/*   const authenticatedUser = await register(username, password);
+
+  if (authenticatedUser==='exist') {
+    return res.status(400).json({
+       message: 'L\'utilisateur existe déjà',
+    })
+  }
 
   if (!authenticatedUser) return res.sendStatus(409); // 409 Conflict
   // req.session.username = authenticatedUser.username;
   // req.session.token = authenticatedUser.token;
   return res.json(authenticatedUser);
 });
-
-/* Login a user */
+ *//* Login a user */
 router.post('/login', async (req, res) => {
   const username = req?.body?.username?.length !== 0 ? req.body.username : undefined;
   const password = req?.body?.password?.length !== 0 ? req.body.password : undefined;
+  // const token = req?.body?.authentification?.length !== 0 ? req.body.authent : undefined;
+
+  // [EIO : DEBUT - Token Test] test si token est présent - TBI
+
+  //  [EIO : FIN - Token Test]
 
   if (!username || !password) return res.sendStatus(400); // 400 Bad Reques
 

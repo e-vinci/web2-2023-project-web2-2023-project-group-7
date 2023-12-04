@@ -1,8 +1,11 @@
+// eslint-disable-next-line import/no-unresolved
 import ecranRanking from '../../assets/Capture1.png';
-// eslint-disable-next-line import/no-unresolved, no-unused-vars
 import Navigate from '../Router/Navigate';
 
+ // const { storeUser } = require('../../utils/connection');
+
 const ConnectionPage = () => {
+  let responseFetch =null;
   const main = document.querySelector('main');
 
   const connectionPageContent = document.createElement('div');
@@ -54,15 +57,22 @@ const ConnectionPage = () => {
         body: JSON.stringify(formData),
         headers: { 'Content-Type': 'application/json' }
       });
-      Navigate('/');
+      responseFetch = await response.json()
+     
+       if (response.ok) {
+        // storeUser(responseFetch); // ne fonctionne pas : message d'erreur n'est pas une fonction????
+          localStorage.setItem('project.usrnm',responseFetch.username);
+          localStorage.setItem('project.tkn',responseFetch.token);
+       }
 
       if (!response.ok) {
-        alert('Passwords do not match');
+        // alert('Passwords do not match');
         ConnectionPage();
         throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
-        
+       
       }
       Navigate('/');
+      window.location.reload();
     } catch (error) {
       console.error('Login failed:', error.message);
     }

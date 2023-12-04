@@ -2,8 +2,13 @@
 import ecranRanking from '../../assets/Capture1.png';
 import Navigate from '../Router/Navigate';
 
+
+// const { storeUser } = require('../../utils/connection');
+
 // Definition of the ConnectionPage component
 const ConnectionPage = () => {
+  let responseFetch =null;
+
   // Select the <main> element in the HTML document
   const main = document.querySelector('main');
 
@@ -59,37 +64,47 @@ const ConnectionPage = () => {
       ConnectionPage();
       return;
     }
-
+ 
     // Build the FormData object from the form values
     const formData = {
       username: username.input.value,
       password: password.input.value,
     };
-
+   
     try {
       // Send POST request to the registration API
       const response = await fetch('api/auths/register', {
         method: 'POST',
         body: JSON.stringify(formData),
         headers: { 'Content-Type': 'application/json' }
-      });
-      event.preventDefault();
-      Navigate('/');
-
-      // Handle request errors
-      if (!response.ok) {
-        throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
+      })
+ 
+ 
+      responseFetch = await response.json()
+     
+      // Stocke le token dans le local storage (pas de cookie - choix du developpeur EIO)
+      // storeUser(responseFetch);
+      localStorage.setItem('project.usrnm',responseFetch.username)
+      localStorage.setItem('project.tkn',responseFetch.token)
+      // Gestion des erreurs
+      if (response.status ===400){
+        console.log(responseFetch.message)
+        localStorage.removeItem('project.usrnm')
+        localStorage.removeItem('project.tkn')
       }
 
-      // Redirect to the home page after registration
-      Navigate('/');
+      if (!response.ok) {
+        throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
+        // console.log(${response.status } +" : " + response.statusText);
+      }
 
+      // Redirige vers la home page
+      Navigate('/');
+      window.location.reload();
     } catch (error) {
       console.error('Registration failed:', error.message);
     }
 
-    // Redirect to the home page (again)
-    Navigate('/');
   });
 
   // Add fields to the form
@@ -113,6 +128,9 @@ const ConnectionPage = () => {
   // Add the connection page to <main>
   main.appendChild(connectionPageContent);
 };
+
+
+
 
 // Export the ConnectionPage component
 export default ConnectionPage;

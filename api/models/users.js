@@ -41,7 +41,7 @@ async function login(username, password) {
 
 async function register(username, password) {
   const userFound = readOneUserFromUsername(username);
-  if (userFound) return undefined;
+  if (userFound) return 'exist';
 
   await createOneUser(username, password);
 
