@@ -16,16 +16,24 @@ const RankingPage = async () => {
 
     // Création du tableau pour afficher les données de classement
     const rankingTable = document.createElement('table');
-    rankingTable.classList.add('table', 'table-striped', 'mt-3'); // Ajout des classes Bootstrap pour styliser le tableau
+    rankingTable.classList.add('table', 'table-striped', 'mt-5'); // Ajout des classes Bootstrap pour styliser le tableau
+    // "mt-5" adds top margin to create space between the navbar and the table
 
     // Création de l'en-tête du tableau
     const tableHeader = document.createElement('thead');
     const headerRow = document.createElement('tr');
     const headerColumns = ['Rank', 'Username', 'Score']; // Mettez les noms de colonnes appropriés ici
 
-    headerColumns.forEach((column) => {
+    headerColumns.forEach((column, index) => {
       const th = document.createElement('th');
-      th.textContent = column;
+      // Assign specific labels for the first, second, and third columns
+      if (index === 0) {
+        th.textContent = 'Ranking';
+      } else if (index === 1) {
+        th.textContent = 'Username';
+      } else if (index === 2) {
+        th.textContent = 'Score';
+      }
       headerRow.appendChild(th);
     });
 
@@ -52,6 +60,7 @@ const RankingPage = async () => {
     console.error('Error fetching ranking data:', error);
   }
 
+  // Création du bouton de retour
   const backButton = document.createElement('button');
   backButton.textContent = 'Back to Home';
   backButton.classList.add('btn', 'btn-primary', 'mt-3'); // Ajout des classes Bootstrap pour styliser le bouton
