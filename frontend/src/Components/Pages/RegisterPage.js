@@ -62,6 +62,12 @@ const ConnectionPage = () => {
       ConnectionPage();
       return;
     }
+    if(username.input.value.length >14){
+      alert("user has too many characters");
+      ConnectionPage();
+      return;
+
+    }
  
     // Build the FormData object from the form values
     const formData = {
@@ -91,7 +97,10 @@ const ConnectionPage = () => {
       }
 
       if (!response.ok) {
+        ConnectionPage();
+        alert("user already taken");
         throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
+        
         // console.log(${response.status } +" : " + response.statusText);
       }
 

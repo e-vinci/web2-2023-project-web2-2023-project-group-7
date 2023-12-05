@@ -2,13 +2,6 @@ const express = require('express');
 const { writescore, getRanking } = require('../models/users');
 
 const router = express.Router();
-/* const {
-  writescore,
-  // login,
-  // register,
-  // readOneUserFromUsername,
-} = require('../models/users'); */
-// const { authorize, isAdmin } = require('../utils/auths');
 
 // Route pour l'inscription du score
 router.post('/writescore', async (req, res) => {
@@ -30,10 +23,5 @@ router.get('/ranking', async (req, res) => {
   if (!ranking) return res.sendStatus(401); // 401 Unauthorized
   return res.json(ranking);
 });
-
-/* GET users listing. */
-/* router.get('/', (req, res) => {
-  res.json({ users: [{ name: 'e-baron' }] });
-}); */
 
 module.exports = router;

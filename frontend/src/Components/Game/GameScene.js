@@ -11,6 +11,7 @@ import jumpAsset from '../../assets/Samurai/Jump.png';
 import attack1Asset from '../../assets/Samurai/Attack_1.png';
 import attack2Asset from '../../assets/Samurai/Attack_2.png';
 import attack3Asset from '../../assets/Samurai/Attack_3.png';
+import { sentScore } from '../../utils/connection';
 
 const GROUND_KEY = 'ground';
 const IDLE_KEY = 'idle';
@@ -289,7 +290,9 @@ class GameScene extends Phaser.Scene {
       this.scoreLabel.setText(`GAME OVER : ( \nYour Score = ${this.scoreLabel.score}`);
 
       this.player.setTint(0xff0000);
-
+      if(localStorage.getItem('project.usrnm')!== null ){sentScore(localStorage.getItem('project.usrnm'),this.scoreLabel.score)}
+      
+      // loic 
       this.gameOver = true;
       
     } else if(this.botHealth <1){
@@ -302,6 +305,7 @@ class GameScene extends Phaser.Scene {
         // increments bot health by 1 each time it respawns making it harder
         this.botHealth = this.previousBotHealth + 1;
         this.playerHealth += 20;
+         this.botDamage += 80;
         this.previousBotHealth = this.botHealth;
 
       }, 2000);

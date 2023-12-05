@@ -24,11 +24,4 @@ const authorize = (req, res, next) => {
   }
 };
 
-/* const isAdmin = (req, res, next) => {
-  const { username } = req.user;
-
-  if (username !== 'admin') return res.sendStatus(403);
-  return next();
-}; */
-
 module.exports = { authorize };

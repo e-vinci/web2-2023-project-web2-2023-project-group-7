@@ -15,7 +15,6 @@ if(localStorage.getItem('project.usrnm')!== null ){
   usrnmSession = localStorage.getItem('project.usrnm')
 }else{
   usrnmSession = "Unknow"
-
 }
 const Navbar = () => {
   const navbarWrapper = document.querySelector('#navbarWrapper');

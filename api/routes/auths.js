@@ -23,20 +23,7 @@ router.post('/register', async (req, res) => {
 
   return res.json(result);
 });
-/*   const authenticatedUser = await register(username, password);
-
-  if (authenticatedUser==='exist') {
-    return res.status(400).json({
-       message: 'L\'utilisateur existe déjà',
-    })
-  }
-
-  if (!authenticatedUser) return res.sendStatus(409); // 409 Conflict
-  // req.session.username = authenticatedUser.username;
-  // req.session.token = authenticatedUser.token;
-  return res.json(authenticatedUser);
-});
- *//* Login a user */
+/* Login a user */
 router.post('/login', async (req, res) => {
   const username = req?.body?.username?.length !== 0 ? req.body.username : undefined;
   const password = req?.body?.password?.length !== 0 ? req.body.password : undefined;
@@ -60,18 +47,5 @@ router.get('/logout', (req, res) => {
   req.session = null;
   return res.sendStatus(200);
 });
-
-/* router.post('/writescore', async (req, res) => {
-  const { username, score } = req.body;
-  try {
-    await writescore(username, score);
-    return res.json();
-  } catch (error) {
-    console.error('Erreur lors de l\'inscription du score:', error);
-    return res.status(500).json({
-      message: "Une erreur est survenue lors de l'inscription du score",
-    });
-  }
-}); */
 
 module.exports = router;
