@@ -1,3 +1,5 @@
+/* eslint-disable prefer-const */
+/* eslint-disable no-plusplus */
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-return */
@@ -34,8 +36,8 @@ const ATTACK3_KEY = 'attack3'
 let info
 let nbRequired
 let currentAttack = 'attack1'
-const enemy = [];
-const allies = [];
+let enemy = [];
+let allies = [];
 const listChapion = [];
 
 class GameScene extends Phaser.Scene {
@@ -54,6 +56,7 @@ class GameScene extends Phaser.Scene {
     this.previousCollisionTime = 0;
     this.interval = 1000;
     this.isCollisionDone = false;
+    this.alliesCollisionDone = false;
     this.enemy= [];
     this.allies= [];
   }
@@ -100,20 +103,20 @@ class GameScene extends Phaser.Scene {
     const platforms = this.createPlatforms();
     this.player = this.createPlayer();
     this.bot = this.createBot();
-    // this.knight = this.createKnight();
+    this.knight = this.createKnight();
     this.mage = this.createMage();
 
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
 
     this.physics.add.collider(this.player, platforms);
     this.physics.add.collider(this.bot, platforms);
-    // this.physics.add.collider(this.knight, platforms);
+    this.physics.add.collider(this.knight, platforms);
     this.physics.add.collider(this.mage, platforms);
-    // this.knight.group = this.physics.add.group();
+    this.knight.group = this.physics.add.group();
     this.bot.group = this.physics.add.group();
     this.mage.group = this.physics.add.group();
 
-    // this.physics.add.collider(this.knight.group, this.platforms);
+    this.physics.add.collider(this.knight.group, this.platforms);
     this.physics.add.collider(this.bot.group, this.platforms);
     this.physics.add.collider(allies, platforms)
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -172,6 +175,15 @@ class GameScene extends Phaser.Scene {
     if (this.gameOver) {
       return;
     }
+    for(let i=allies.length-1;i>=0;i--){
+      for(let j=allies.length-2;j>=0;j--){
+        if (this.physics.overlap(i,j)){
+          this.alliesCollisionDone=true;
+          this.alliesColission(j,i);
+          j.anims.play('idle', true)
+        }
+      }
+    }
   
 
     this.physics.world.wrap(this.bot, 0, false);
@@ -181,9 +193,9 @@ class GameScene extends Phaser.Scene {
     if (this.physics.overlap(this.player, this.bot)) {
       this.handlePlayerBotCollision();
     }
-    // if (this.physics.overlap(this.knight, this.bot)) {
-    //  console.log('Knight collides with Bot');
-    // }
+    if (this.physics.overlap(this.knight, this.bot)) {
+    console.log('Knight collides with Bot');
+    }
     if (this.physics.overlap(this.mage, this.bot)) {
       console.log('Mage collides with Bot');
     }
@@ -231,7 +243,7 @@ class GameScene extends Phaser.Scene {
     bot.setBounce(0.2);
     bot.body.setSize(67,74,true).setOffset(20, 54);
 
-    // bot.setVelocityX(-200);
+    bot.setVelocityX(-200);
     bot.flipX = true;
 
     bot.group = this.physics.add.group();
@@ -281,42 +293,15 @@ class GameScene extends Phaser.Scene {
     /* The 'left' animation uses frames 0, 1, 2 and 3 and runs at 10 frames per second.
     The 'repeat -1' value tells the animation to loop.
     */
-
-    player.group = this.physics.add.group();
-    player.group.add(bot);
-
-    this.physics.add.collider(player.group, this.platforms);
-    allies.push(player)
-    
-
-    this.time.addEvent({
-      delay: 50,
-      loop: true,
-      callback: () => {
-        if (this.physics.overlap(this.player, this.knight)) {
-          player.setVelocityX(0);
-          player.anims.play('idle', true);
-        }else if(player.body.velocity.x < 0) {
-          player.anims.play('walk', true);
-        } else if(!this.physics.overlap(this.player, this.bot)) {
-          player.setVelocityX(-50); 
-        } else if (this.physics.overlap(this.bot, this.player)) {
-          this.handlePlayerBotCollision();
-        } else {
-          player.anims.play('turn', true);
-        }
-      }
-    });
-
+    allies.push(player);
     player.setCollideWorldBounds(true);
     player.body.onWorldBounds = true;
-    allies.push(this.player);
+
     return player;
   }
 
   handlePlayerBotCollision() {
 
-    
     const timer = this.time.now;
     // Use an interval that lets the animation to be done only once every time and deducting the health only after that
     if(timer - this.previousCollisionTime > this.interval){
@@ -398,14 +383,14 @@ class GameScene extends Phaser.Scene {
     const knight = this.physics.add.sprite(50, 400, 'knight');
     knight.play('idle');
     knight.setBounce(0.2);
-    knight.body.setSize(60,50,true).setOffset(110,80)
+    // this.knight.body.setSize(60,50,true).setOffset(110,80)
     
     knight.type= 'knight'
-    this.physics.world.debug.body(knight);
+    
   
     knight.group = this.physics.add.group();
     knight.group.add(knight);
-    allies.push(knight.group);
+    allies.push(knight);
 
     this.physics.add.collider(knight.group, this.platforms);
     
@@ -452,7 +437,7 @@ class GameScene extends Phaser.Scene {
 
     mage.group = this.physics.add.group();
     mage.group.add(mage);
-    allies.push(mage.group);
+    allies.push(mage);
     this.physics.add.collider(mage.group, this.platforms);
 
     this.time.addEvent({
@@ -558,15 +543,6 @@ class GameScene extends Phaser.Scene {
 
     listChapion.push(knightChampion); 
 
-    
-
-    
-
-   
-    
-
-    
-
     return listChapion;
   }
   champSelectMaga(){
@@ -582,8 +558,10 @@ class GameScene extends Phaser.Scene {
     listChapion.push(mageChampion);
   }
 
-  alliesEnemiesColission(){
-    
+  alliesColission(obj1, obj2){
+    if (this.alliesCollisionDone){
+      obj2.setVelocityX(0);
+    }
   }
 
 }
