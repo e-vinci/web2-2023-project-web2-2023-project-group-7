@@ -63,7 +63,7 @@ const Navbar = () => {
   </div><!-- /.container-fluid -->
 </nav>
 
- 
+
   `;
   navbarWrapper.innerHTML = navbar;
 };
