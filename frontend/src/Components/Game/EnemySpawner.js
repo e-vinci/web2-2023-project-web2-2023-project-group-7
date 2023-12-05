@@ -5,8 +5,9 @@ export default class EnemySpawner {
   /**
    * @param {Phaser.Scene} scene
    */
-  constructor(scene) {
+  constructor(scene,hp) {
     this.scene = scene;
+    this.hp = hp;
     
     this._group = this.scene.physics.add.group();
   }
