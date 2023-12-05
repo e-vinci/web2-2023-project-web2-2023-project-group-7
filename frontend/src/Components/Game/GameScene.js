@@ -33,14 +33,22 @@ class GameScene extends Phaser.Scene {
     this.cursors = undefined;
     this.scoreLabel = undefined;
     this.gameOver = false;
+    // player stats
     this.playerHealth = 20;
-    this.botHealth = 2;
+    this.playerMaxHealth = 100;
     this.playerDamage = 1;
-    this.botDamage = 1;
+    // bot stats
+    this.botMaxHealth = 5;
+    this.botMaxDamage = 3;
+    this.botHealth = Phaser.Math.Between(2, this.botMaxHealth);
+    this.botDamage = Phaser.Math.Between(1, this.botMaxDamage);
     this.previousBotHealth = this.botHealth;
+    
     this.previousCollisionTime = 0;
     this.interval = 1000;
     this.isCollisionDone = false;
+    this.healthBonus = undefined;
+    this.isCollected = false;
   }
 
   preload() {
@@ -77,7 +85,7 @@ class GameScene extends Phaser.Scene {
   create() {
     this.add.image(400, 300, 'obscurity');
     this.createHealth();
-    const platforms = this.createPlatforms();
+    this.platforms = this.createPlatforms();
     this.player = this.createPlayer();
     this.enemySpawn = new EnemySpawner(this);
     this.bot = this.createBot();
@@ -86,17 +94,19 @@ class GameScene extends Phaser.Scene {
       this.bots.push(this.bot);
     }
 
+    this.healthBonus = this.createHealthBonus()
+
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
 
-    this.physics.add.collider(this.player, platforms);
-    this.physics.add.collider(this.bot, platforms);
-
+    this.physics.add.collider(this.player, this.platforms);
+    this.physics.add.collider(this.bot, this.platforms);    
     
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.world.setBoundsCollision(true, true, true, true);
 
     this.debugShowBody = true;
+
     
     /* The Collider takes two objects and tests for collision and performs separation against them.
     Note that we could call a callback in case of collision... */
@@ -176,13 +186,15 @@ class GameScene extends Phaser.Scene {
       .create(400, 620, GROUND_KEY)
       .setScale(2)
       .refreshBody();
+
+    platforms.create(200,400,GROUND_KEY);
     
     return platforms;
   }
 
   createHealth(){
     const hp = this.add.image(40, 100,'health');
-    info = this.add.text(60, 100, this.playerHealth);
+    info = this.add.text(60, 100, `${this.playerHealth}/${this.playerMaxHealth}`);
     this.add.text(60,120, 'nb hits required:');
     nbRequired = this.add.text(225,120, this.botHealth/this.playerDamage);
     return hp;
@@ -191,23 +203,29 @@ class GameScene extends Phaser.Scene {
 
   createBot() {
     const bot = this.physics.add.sprite(600, 470, IDLE_KEY);
+    bot.enableBody(true, 600, 470, true, true);
     bot.setBounce(0.2);
     bot.body.setSize(67,74,true).setOffset(20, 54);
     bot.setVelocityX(-200);
     bot.flipX = true;
 
-    this.enemySpawn.spawn(bot);
-
     this.time.addEvent({
       delay: 50,
       loop: true,
       callback: () => {
-        if(bot.body.velocity.x < 0) {
-          bot.anims.play('walk', true);
-        } else if(!this.physics.overlap(bot, this.player)) {
-          bot.setVelocityX(-200);
-        } else if (this.physics.overlap(bot, this.player)) {
+        if (this.physics.overlap(bot, this.player)) {
           this.handlePlayerBotCollision();
+        } else if(bot.body.position.x === this.player.body.position.x){
+          bot.anims.play('turn', true);
+          bot.setVelocityX(0);
+        } else if(bot.body.position.x < this.player.body.position.x - 10){
+          bot.anims.play('walk', true);
+          bot.setVelocityX(100);
+          bot.flipX = false;
+        } else if(bot.body.position.x > this.player.body.position.x + 10){
+          bot.anims.play('walk', true);
+          bot.setVelocityX(-100);
+          bot.flipX = true;
         } else {
           bot.anims.play('turn', true);
         }
@@ -253,6 +271,13 @@ class GameScene extends Phaser.Scene {
       if(!this.isCollisionDone){
         this.bot.setVelocityX(0);
         this.player.setVelocityX(0);
+        if(this.bot.body.position.x < this.player.body.position.x){
+          this.bot.flipX = false;
+          this.player.flipX = true;
+        } else {
+          this.bot.flipX = true;
+          this.player.flipX = false;
+        }
         if(currentAttack === 'attack1'){
           this.player.anims.play('attack1');
           currentAttack = 'attack2'
@@ -296,18 +321,61 @@ class GameScene extends Phaser.Scene {
       this.bot.disableBody(true, true);
       this.scoreLabel.add(this.previousBotHealth);
       this.enemySpawn.spawn(this.bot);
-      
+
+      if(!this.isCollected){
+        this.playerDamage += 3;
+        this.botMaxHealth += 5;
+      } else{
+        this.botMaxDamage += 5;
+        this.isCollected = false;
+      }
+
       setTimeout(() => {
         this.bot.enableBody(true, 600, 470, true, true);
         // increments bot health by 1 each time it respawns making it harder
-        this.botHealth = this.previousBotHealth + 1;
-        this.playerHealth += 20;
+        this.botHealth = Phaser.Math.Between(5, this.botMaxHealth);
+        this.botDamage = Phaser.Math.Between(2, this.botMaxDamage);
         this.previousBotHealth = this.botHealth;
 
-      }, 2000);
+      }, Phaser.Math.Between(100,3000));
+      
     }
     nbRequired.setText(this.botHealth/this.playerDamage);
-    info.setText(this.playerHealth);
+    info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);  }
+
+  createHealthBonus(){
+    
+    this.time.addEvent({
+      delay: Phaser.Math.Between(2000,20000),
+      callback: () => {
+        const x = this.player.x + Phaser.Math.Between(-200,200);
+        const y = this.player.y - 200;
+        const healthBonus = this.physics.add.sprite(x, y, 'health');
+
+        this.physics.add.overlap(this.player, healthBonus, () => {
+          this.collectHealthBonus(20);
+          healthBonus.destroy();
+        });
+
+        healthBonus.setGravityY(300);
+        healthBonus.setBounce(0.8);
+
+        healthBonus.setCollideWorldBounds(true);
+        healthBonus.body.onWorldBounds = true;
+        
+        this.physics.add.collider(healthBonus, this.platforms);
+      },
+      loop: true,
+    });
+  }
+
+  collectHealthBonus(qty) {
+    this.playerHealth += qty;
+    if(this.playerHealth > this.playerMaxHealth) {
+      this.playerHealth = this.playerMaxHealth;
+    }
+    this.isCollected = true;
+    info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
   }
 
 
