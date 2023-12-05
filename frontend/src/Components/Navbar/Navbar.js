@@ -18,7 +18,9 @@ if(localStorage.getItem('project.usrnm')!== null ){
 }
 const Navbar = () => {
   const navbarWrapper = document.querySelector('#navbarWrapper');
-  const navbar = `
+  let navbar=null;
+  if(localStorage.getItem('project.usrnm')!== null ){
+     navbar = `
   height: 10%;
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
   <div class="container-fluid">
@@ -50,7 +52,34 @@ const Navbar = () => {
     <li><a class="dropdown-item" href="#" data-uri="/logout">Logout</a></li>
     </ul>
   </div><!-- /.container-fluid -->
+</nav>`;
+  }else{
 
+   navbar = `
+  height: 10%;
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+  <div class="container-fluid">
+
+    <!-- Links -->
+    <ul class="navbar-nav mr-auto">
+    <li class="nav-item">
+      <!-- Brand -->
+      <a class="navbar-brand" href="#" data-uri="/game">
+        <img src="${logo}" alt="logo" style="width:50px">
+      </a>
+      </li>
+      <!-- Links -->
+      <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="#" data-uri="/">Home</a>
+      </li>
+      <li class="nav-item">
+      <a class="nav-link" href="#" data-uri="/game">Game</a>
+      </li>
+      <li class="nav-item">
+      <a class="nav-link" href="#" data-uri="/ranking">Ranking</a>
+    </li>
+    </ul>
+  
     <!-- Dropdown -->
     <ul class="navbar-nav ml-auto">
     <li class="nav-item-right dropdown">
@@ -63,7 +92,7 @@ const Navbar = () => {
 </nav>
 
 
-  `;
+  `;}
   navbarWrapper.innerHTML = navbar;
 };
 
