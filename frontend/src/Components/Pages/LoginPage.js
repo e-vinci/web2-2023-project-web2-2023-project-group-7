@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-unresolved
 import ecranRanking from '../../assets/Capture1.png';
 import Navigate from '../Router/Navigate';
-
- // const { storeUser } = require('../../utils/connection');
+import { storeUser  } from '../../utils/connection';
+// import { storeUser } from '../../utils/connection';
 
 const ConnectionPage = () => {
   let responseFetch =null;
@@ -57,12 +57,11 @@ const ConnectionPage = () => {
         body: JSON.stringify(formData),
         headers: { 'Content-Type': 'application/json' }
       });
-      responseFetch = await response.json()
-     
+      responseFetch = await response.json();
+   
+
        if (response.ok) {
-        // storeUser(responseFetch); // ne fonctionne pas : message d'erreur n'est pas une fonction????
-          localStorage.setItem('project.usrnm',responseFetch.username);
-          localStorage.setItem('project.tkn',responseFetch.token);
+        storeUser(responseFetch); // si ok, stocke les données utilisateurs dans le localStorage & pas de cookie
        }
 
       if (!response.ok) {
