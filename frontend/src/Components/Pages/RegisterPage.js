@@ -1,9 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
 import ecranRanking from '../../assets/Capture1.png';
 import Navigate from '../Router/Navigate';
-
-
-// const { storeUser } = require('../../utils/connection');
+import { storeUser } from '../../utils/connection';
 
 // Definition of the ConnectionPage component
 const ConnectionPage = () => {
@@ -83,9 +81,8 @@ const ConnectionPage = () => {
       responseFetch = await response.json()
      
       // Stocke le token dans le local storage (pas de cookie - choix du developpeur EIO)
-      // storeUser(responseFetch);
-      localStorage.setItem('project.usrnm',responseFetch.username)
-      localStorage.setItem('project.tkn',responseFetch.token)
+      storeUser(responseFetch);
+
       // Gestion des erreurs
       if (response.status ===400){
         console.log(responseFetch.message)
@@ -101,6 +98,11 @@ const ConnectionPage = () => {
       // Redirige vers la home page
       Navigate('/');
       window.location.reload();
+
+
+
+
+     
     } catch (error) {
       console.error('Registration failed:', error.message);
     }

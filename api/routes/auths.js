@@ -61,4 +61,17 @@ router.get('/logout', (req, res) => {
   return res.sendStatus(200);
 });
 
+/* router.post('/writescore', async (req, res) => {
+  const { username, score } = req.body;
+  try {
+    await writescore(username, score);
+    return res.json();
+  } catch (error) {
+    console.error('Erreur lors de l\'inscription du score:', error);
+    return res.status(500).json({
+      message: "Une erreur est survenue lors de l'inscription du score",
+    });
+  }
+}); */
+
 module.exports = router;

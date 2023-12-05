@@ -24,7 +24,7 @@ app.use('/auths', authsRouter);
 
 module.exports = app;
 
-/* // app.js ou server.js
+/*
 
 const express = require('express');
 const bodyParser = require('body-parser');
