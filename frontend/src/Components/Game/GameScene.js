@@ -356,7 +356,7 @@ class GameScene extends Phaser.Scene {
         const healthBonus = this.physics.add.sprite(x, y, 'health');
 
         this.physics.add.overlap(this.player, healthBonus, () => {
-          this.collectHealthBonus(20);
+          this.collectHealthBonus(5);
           healthBonus.destroy();
         });
 
