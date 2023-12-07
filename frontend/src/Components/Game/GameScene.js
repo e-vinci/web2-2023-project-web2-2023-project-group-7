@@ -7,6 +7,8 @@
 /* eslint-disable lines-between-class-members */
 import Phaser from 'phaser';
 import ScoreLabel from './ScoreLabel';
+import Knight from  './Knight';
+import Bot from './Bot';
 
 import skyAsset from '../../assets/bosque_tenebre.jpg';
 import platformAsset from '../../assets/platform.png';
@@ -33,18 +35,23 @@ const JUMP_KEY = 'jump';
 const ATTACK1_KEY = 'attack1'
 const ATTACK2_KEY = 'attack2'
 const ATTACK3_KEY = 'attack3'
+let gold;
 let info
 let nbRequired
 let currentAttack = 'attack1'
 let enemy = [];
 let allies = [];
-const listChapion = [];
+let nombreAllies;
+let nombreEnemy;
+
+let lastTimeInvocation = 0;
 
 class GameScene extends Phaser.Scene {
   constructor() {
     super('game-scene');
     this.player = undefined;
     this.bot = undefined;
+    this.knight = undefined;
     this.cursors = undefined;
     this.scoreLabel = undefined;
     this.gameOver = false;
@@ -59,6 +66,10 @@ class GameScene extends Phaser.Scene {
     this.alliesCollisionDone = false;
     this.enemy= [];
     this.allies= [];
+    this.gold = 0;
+    this.nombreAllies=0;
+    this.nombreEnemy=0;
+    this.lastTimeInvocation = 0;
   }
 
   preload() {
@@ -99,12 +110,9 @@ class GameScene extends Phaser.Scene {
 
   create() {
     this.add.image(400, 300, 'sky');
-    this.createHealth();
+    
     const platforms = this.createPlatforms();
-    this.player = this.createPlayer();
-    this.bot = this.createBot();
-    this.knight = this.createKnight();
-    this.mage = this.createMage();
+    this.createBot = this.createBot();
 
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
 
@@ -112,13 +120,7 @@ class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.bot, platforms);
     this.physics.add.collider(this.knight, platforms);
     this.physics.add.collider(this.mage, platforms);
-    this.knight.group = this.physics.add.group();
-    this.bot.group = this.physics.add.group();
-    this.mage.group = this.physics.add.group();
 
-    this.physics.add.collider(this.knight.group, this.platforms);
-    this.physics.add.collider(this.bot.group, this.platforms);
-    this.physics.add.collider(allies, platforms)
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.world.setBoundsCollision(true, true, true, true);
@@ -127,7 +129,8 @@ class GameScene extends Phaser.Scene {
 
     this.makeAnim();
     this.championkngiht = this.championSelectKngiht();
-    this.championMage = this.champSelectMaga();
+    // eslint-disable-next-line no-new
+    this.createBot = this.time.addEvent({delay:2000, loop:true, callback: () => {  this.createBot()}, callbackScope:this})
     
     /* The Collider takes two objects and tests for collision and performs separation against them.
     Note that we could call a callback in case of collision... */
@@ -175,6 +178,11 @@ class GameScene extends Phaser.Scene {
     if (this.gameOver) {
       return;
     }
+    if (this.knight) {
+      this.knight.update(time, delta);
+    }
+    if ((this.bot))
+
     for(let i=allies.length-1;i>=0;i--){
       for(let j=allies.length-2;j>=0;j--){
         if (this.physics.overlap(i,j)){
@@ -184,38 +192,25 @@ class GameScene extends Phaser.Scene {
         }
       }
     }
+    if (this.physics.overlap(this.alliesColission))
+    
+    
   
 
     this.physics.world.wrap(this.bot, 0, false);
 
+    
 
-
-    if (this.physics.overlap(this.player, this.bot)) {
-      this.handlePlayerBotCollision();
-    }
-    if (this.physics.overlap(this.knight, this.bot)) {
-    console.log('Knight collides with Bot');
-    }
-    if (this.physics.overlap(this.mage, this.bot)) {
-      console.log('Mage collides with Bot');
-    }
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-300);
-      this.player.anims.play('walk', true);
-      this.player.flipX = true;
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(300);
-      this.player.anims.play('walk', true);
-      this.player.flipX = false;
-    } else if(!this.physics.overlap(this.player, this.bot)){
-      this.player.setVelocityX(0);
-      this.player.anims.play('turn', true);
-    }
-
-    if (this.cursors.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-400);
-    }
-
+  }
+  createBot(){
+    const bot = new Bot(this, 600, 400);
+    this.enemy.push(bot);
+    this.nombreEnemy++;
+  }
+  createKnight(){
+    const knight = new Knight(this, 50,400);
+    this.allies.push(knight)
+    nombreAllies++;
   }
 
   createPlatforms() {
@@ -230,114 +225,9 @@ class GameScene extends Phaser.Scene {
     return platforms;
   }
 
-  createHealth(){
-    const hp = this.add.image(40, 100,'health');
-    info = this.add.text(60, 100, this.playerHealth);
-    this.add.text(60,120, 'nb hits required:');
-    nbRequired = this.add.text(225,120, this.botHealth/this.playerDamage);
-    return hp;
-  }
 
-  createBot() {
-    const bot = this.physics.add.sprite(600, 470, IDLE_KEY);
-    bot.setBounce(0.2);
-    bot.body.setSize(67,74,true).setOffset(20, 54);
-
-    bot.setVelocityX(-200);
-    bot.flipX = true;
-
-    bot.group = this.physics.add.group();
-    bot.group.add(bot);
-
-    this.physics.add.collider(bot.group, this.platforms);
-    this.enemy.push(this.bot)
-    
-
-    this.time.addEvent({
-      delay: 50,
-      loop: true,
-      callback: () => {
-        if (this.physics.overlap(this.bot, this.knight)) {
-          bot.setVelocityX(0);
-          bot.anims.play('idle', true);
-        }else if(bot.body.velocity.x < 0) {
-          bot.anims.play('walk', true);
-        } else if(!this.physics.overlap(this.bot, this.player)) {
-          bot.setVelocityX(-50); 
-        } else if (this.physics.overlap(this.bot, this.player)) {
-          this.handlePlayerBotCollision();
-        } else {
-          bot.anims.play('turn', true);
-        }
-      }
-    });
-
-    bot.setCollideWorldBounds(true);
-    bot.body.onWorldBounds = true;
- 
-
-    this.physics.world.on('worldbounds', (body) => {
-      if(body.gameObject === bot) {
-        bot.anims.play('turn', true);
-        bot.setVelocityX(0);
-      }
-    })
-
-    return bot;
-  }
-
-  createPlayer() {
-    const player = this.physics.add.sprite(140, 470, IDLE_KEY);
-    player.setBounce(0.2);
-    player.body.setSize(67,74,true).setOffset(20,54);
-    /* The 'left' animation uses frames 0, 1, 2 and 3 and runs at 10 frames per second.
-    The 'repeat -1' value tells the animation to loop.
-    */
-    allies.push(player);
-    player.setCollideWorldBounds(true);
-    player.body.onWorldBounds = true;
-
-    return player;
-  }
-
-  handlePlayerBotCollision() {
-
-    const timer = this.time.now;
-    // Use an interval that lets the animation to be done only once every time and deducting the health only after that
-    if(timer - this.previousCollisionTime > this.interval){
-      this.isCollisionDone = false;
-      this.previousCollisionTime = timer;
-      // Detect if animation has already been done during the interval, if yes, don't repeat and wait next time;
-      if(!this.isCollisionDone){
-        this.bot.setVelocityX(0);
-        this.player.setVelocityX(0);
-        if(currentAttack === 'attack1'){
-          this.player.anims.play('attack1');
-          currentAttack = 'attack2'
-        } else if (currentAttack === 'attack2'){
-          this.player.anims.play('attack2');
-          currentAttack = 'attack3'
-        } else {
-          this.player.anims.play('attack3')
-          currentAttack = 'attack1'
-        }
-
-        this.bot.anims.play('attack1');
-        
-        this.time.addEvent({
-          delay: 280,
-          callback: () => {
-            this.handleHealth();
-            this.isCollisionDone = true;
-          }
-        })
-
-      }
-    }
-  }
 
   handleHealth(){
-
 
     this.botHealth -= this.playerDamage;
     this.playerHealth -= this.botDamage;
@@ -378,94 +268,60 @@ class GameScene extends Phaser.Scene {
     return label;
   }
 
-  createKnight(){
+  championSelectKngiht(){
+    const knightChampion = this.add.image(300,100, 'knight1');
     
-    const knight = this.physics.add.sprite(50, 400, 'knight');
-    knight.play('idle');
-    knight.setBounce(0.2);
-    // this.knight.body.setSize(60,50,true).setOffset(110,80)
+    let timer = this.time.now;
+    if (timer - lastTimeInvocation >= 2000){
+      knightChampion.setInteractive();
+      knightChampion.on('pointerdown',() => {
+        this.createKnight();
+        lastTimeInvocation = this.time.now()});
+    }
     
-    knight.type= 'knight'
-    
-  
-    knight.group = this.physics.add.group();
-    knight.group.add(knight);
-    allies.push(knight);
-
-    this.physics.add.collider(knight.group, this.platforms);
-    
-    this.time.addEvent({
-      delay: 50,
-      loop: true,
-      callback: () => {
-        if (this.physics.overlap(knight, this.player)){
-          knight.setVelocityX(0);
-          knight.anims.play('idle',true)
-        } else {
-          // eslint-disable-next-line no-lonely-if
-          if(this.physics.overlap(knight, this.bot)){
-          knight.setVelocityX(0);
-          knight.anims.play('attack1',true);
-        }else{
-          knight.setVelocityX(50);
-          knight.anims.play('run', true)
-        }}
-        allies.forEach((allyGroup) => {
-          this.physics.world.collide(knight.group, allyGroup, (k1, k2) => {
-            const directionk1 = k1.body.velocity.x > 0 ? 'right' : 'left';
-            const directionk2 = k2.body.velocity.x > 0 ? 'right' : 'left';
-            if (directionk1 !== directionk2) {
-              k1.setVelocityX(0);
-              k1.anims.play('idle', true);
-            }
-          });
-        });
-      }
-    });
-
-    knight.setCollideWorldBounds(true);
-    knight.body.onWorldBounds = true;
+    const borderWidth = 4;
+    const borderColor = 0xff0000;
    
-    return knight;
+    const borderGraphics = this.add.graphics();
+    borderGraphics.lineStyle(borderWidth, borderColor);
+    const bounds = knightChampion.getBounds();
+    
+    borderGraphics.strokeRect(bounds.x - borderWidth / 2, bounds.y - borderWidth / 2, bounds.width + borderWidth, bounds.height + borderWidth);
+
+    return knightChampion;
   }
+ 
 
-  createMage(){
-    const mage = this.physics.add.sprite(100,400, 'mage')
-    mage.play('idle')
-    mage.setBounce(0.2);
-    // mage.body.setSize(60,50,true).setOffset(110,80)
-
-    mage.group = this.physics.add.group();
-    mage.group.add(mage);
-    allies.push(mage);
-    this.physics.add.collider(mage.group, this.platforms);
-
+  alliesColission(obj1, obj2){
+    const timer = this.time.now;
+    if (obj1 !== allies[nombreAllies-1] && obj2 !== allies[nombreAllies-2] ){
+      obj1.setVelocityX(0);
+      obj2.setVelocityX(0);
+    }
+  }
+  fightChamp(){
+    const allierFighter = allies[nombreAllies-1];
+    const enemyFighter = thid.bot;
     this.time.addEvent({
       delay: 50,
       loop: true,
       callback: () => {
-        if (this.physics.overlap(mage, this.player)){
-          mage.setVelocityX(0);
-          mage.anims.play('idle',true)
+        if (this.physics.overlap(this.bot, this.knight)) {
+          bot.setVelocityX(0);
+          bot.anims.play('idle', true);
+        }else if(bot.body.velocity.x < 0) {
+          bot.anims.play('walk', true);
+        } else if(!this.physics.overlap(this.bot, this.player)) {
+          bot.setVelocityX(-50); 
+        } else if (this.physics.overlap(this.bot, this.player)) {
+          this.handlePlayerBotCollision();
         } else {
-          // eslint-disable-next-line no-lonely-if
-          if(this.physics.overlap(mage, this.bot)){
-          mage.setVelocityX(0);
-          mage.anims.play('attack',true);
-        }else{
-          mage.setVelocityX(50);
-          mage.anims.play('run', true)
-        }}
+          bot.anims.play('turn', true);
+        }
       }
     });
-
-    mage.setCollideWorldBounds(true);
-    mage.body.onWorldBounds = true;
-    this.add.existing(mage)
-
-    return mage;
+    
   }
-
 
   makeAnim(){
     // KNIGHT
@@ -526,43 +382,6 @@ class GameScene extends Phaser.Scene {
 
     
   };
-
-  championSelectKngiht(){
-   
-    const knightChampion = this.add.image(300,100, 'knight1');
-    knightChampion.setInteractive();
-    knightChampion.on('pointerdown', this.createKnight, this);
-    const borderWidth = 4;
-    const borderColor = 0xff0000;
-   
-    const borderGraphics = this.add.graphics();
-    borderGraphics.lineStyle(borderWidth, borderColor);
-    const bounds = knightChampion.getBounds();
-    
-    borderGraphics.strokeRect(bounds.x - borderWidth / 2, bounds.y - borderWidth / 2, bounds.width + borderWidth, bounds.height + borderWidth);
-
-    listChapion.push(knightChampion); 
-
-    return listChapion;
-  }
-  champSelectMaga(){
-    const mageChampion = this.add.image(400,90 , 'mage1');
-    mageChampion.setInteractive();
-    mageChampion.on('pointerdown', this.createMage, this);
-    const borderWidth = 4;
-    const borderColor = 0xff0000;
-    const borderGraphics = this.add.graphics();
-    borderGraphics.lineStyle(borderWidth, borderColor);
-    const boundsMage = mageChampion.getBounds();
-    borderGraphics.strokeRect(boundsMage.x - borderWidth / 2, boundsMage.y - borderWidth / 2, boundsMage.width + borderWidth, boundsMage.height + borderWidth);
-    listChapion.push(mageChampion);
-  }
-
-  alliesColission(obj1, obj2){
-    if (this.alliesCollisionDone){
-      obj2.setVelocityX(0);
-    }
-  }
 
 }
 
