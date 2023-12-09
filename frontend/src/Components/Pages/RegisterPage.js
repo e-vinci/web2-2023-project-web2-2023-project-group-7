@@ -2,6 +2,7 @@
 import ecranRanking from '../../assets/Capture1.png';
 import Navigate from '../Router/Navigate';
 import { storeUser } from '../../utils/connection';
+import cookieMgt from '../../utils/cookieMgt';
 
 // Definition of the ConnectionPage component
 const ConnectionPage = () => {
@@ -20,6 +21,7 @@ const ConnectionPage = () => {
   connectionPageContent.style.display = 'flex';
   connectionPageContent.style.justifyContent = 'center';
   connectionPageContent.style.alignItems = 'center';
+  connectionPageContent.id = 'RegisterPage';
 
   // Create a container for the form
   const formContainer = document.createElement('div');
@@ -100,18 +102,13 @@ const ConnectionPage = () => {
         ConnectionPage();
         alert("user already taken");
         throw new Error(`Fetch error: ${response.status} : ${response.statusText}`);
-        
+       
         // console.log(${response.status } +" : " + response.statusText);
       }
 
       // Redirige vers la home page
       Navigate('/');
       window.location.reload();
-
-
-
-
-     
     } catch (error) {
       console.error('Registration failed:', error.message);
     }
@@ -138,8 +135,9 @@ const ConnectionPage = () => {
 
   // Add the connection page to <main>
   main.appendChild(connectionPageContent);
+// cookie mgt
+  cookieMgt(connectionPageContent.id);
 };
-
 
 
 

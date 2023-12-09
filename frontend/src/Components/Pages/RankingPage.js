@@ -2,12 +2,14 @@
 // eslint-disable-next-line import/no-unresolved
 import ecrandefondhomepage from '../../assets/Capture3.png';
 import { getRanking } from '../../utils/connection';
+import cookieMgt from '../../utils/cookieMgt';
 
 const RankingPage = async () => {
   const main = document.querySelector('main');
 
   // Création de la structure de la page de classement
   const rankingPageContent = document.createElement('div');
+  rankingPageContent.id = 'RankingPage';
   rankingPageContent.classList.add('ranking-page-content', 'd-flex', 'flex-column', 'align-items-center', 'justify-content-center', 'text-center', 'h-100');
 
   // Fetch ranking data
@@ -83,6 +85,8 @@ const RankingPage = async () => {
   document.body.style.backgroundSize = 'cover';
   document.body.style.backgroundPosition = 'center';
   document.body.style.backgroundAttachment = 'fixed'; // Ajout d'une propriété pour fixer l'image en arrière-plan
+
+  cookieMgt(rankingPageContent.id);
 };
 
 export default RankingPage;

@@ -2,13 +2,14 @@
 import ecranRanking from '../../assets/Capture1.png';
 import Navigate from '../Router/Navigate';
 import { storeUser  } from '../../utils/connection';
-// import { storeUser } from '../../utils/connection';
+import cookieMgt from '../../utils/cookieMgt';
 
 const ConnectionPage = () => {
   let responseFetch =null;
   const main = document.querySelector('main');
 
   const connectionPageContent = document.createElement('div');
+  connectionPageContent.id = 'ConnectionPage';
   connectionPageContent.classList.add('register-page-content');
   connectionPageContent.style.backgroundImage = `url(${ecranRanking})`;
   connectionPageContent.style.backgroundSize = 'cover';
@@ -91,6 +92,9 @@ const ConnectionPage = () => {
   main.innerHTML = '';
 
   main.appendChild(connectionPageContent);
+
+  // cookie mgt
+cookieMgt(connectionPageContent.id);
 };
 
 export default ConnectionPage;

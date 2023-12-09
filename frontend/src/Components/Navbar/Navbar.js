@@ -9,6 +9,8 @@ import logo from '../../assets/logoHuman.png';
  * - the URI associated to a page shall be given in the attribute "data-uri" of the Navbar
  * - the router will show the Page associated to this URI when the user click on a nav-link
  */
+
+
 let usrnmSession = null;
      
 if(localStorage.getItem('project.usrnm')!== null ){
@@ -19,10 +21,9 @@ if(localStorage.getItem('project.usrnm')!== null ){
 const Navbar = () => {
   const navbarWrapper = document.querySelector('#navbarWrapper');
   let navbar=null;
-  if(localStorage.getItem('project.usrnm')!== null ){
-     navbar = `
+  const commonPagePart = `
   height: 10%;
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+  <nav id="main-navbar" class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
   <div class="container-fluid">
 
     <!-- Links -->
@@ -43,7 +44,12 @@ const Navbar = () => {
       <li class="nav-item">
       <a class="nav-link" href="#" data-uri="/ranking">Ranking</a>
     </li>
-    </ul>
+    </ul> `
+ 
+ 
+
+  if(localStorage.getItem('project.usrnm')!== null ){
+     navbar = `
     <!-- Dropdown -->
     <ul class="navbar-nav ml-auto">
     <li class="nav-item-right dropdown">
@@ -56,34 +62,10 @@ const Navbar = () => {
   }else{
 
    navbar = `
-  height: 10%;
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-  <div class="container-fluid">
-
-    <!-- Links -->
-    <ul class="navbar-nav mr-auto">
-    <li class="nav-item">
-      <!-- Brand -->
-      <a class="navbar-brand" href="#" data-uri="/game">
-        <img src="${logo}" alt="logo" style="width:50px">
-      </a>
-      </li>
-      <!-- Links -->
-      <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="#" data-uri="/">Home</a>
-      </li>
-      <li class="nav-item">
-      <a class="nav-link" href="#" data-uri="/game">Game</a>
-      </li>
-      <li class="nav-item">
-      <a class="nav-link" href="#" data-uri="/ranking">Ranking</a>
-    </li>
-    </ul>
-  
     <!-- Dropdown -->
     <ul class="navbar-nav ml-auto">
     <li class="nav-item-right dropdown">
-    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">connection</a>
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Connection</a>
     <ul class="dropdown-menu">
       <li><a class="dropdown-item" href="#" data-uri="/loginPage">Login</a></li>
       <li><a class="dropdown-item" href="#" data-uri="/registerPage">Register</a></li>
@@ -91,10 +73,12 @@ const Navbar = () => {
   </div><!-- /.container-fluid -->
 </nav>
 
-
   `;}
+  navbar = commonPagePart + navbar;
   navbarWrapper.innerHTML = navbar;
+ 
 };
 
-
 export default Navbar ;
+
+
