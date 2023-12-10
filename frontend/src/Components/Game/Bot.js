@@ -3,35 +3,42 @@ import Phaser from 'phaser';
 import HealthBar from './HealthBar'
 
 
-class Bot extends Phaser.GameObjects.Sprite{
+class bot extends Phaser.GameObjects.Sprite{
     constructor(scene, x,y){
-        super(scene, x,y, 'knight');
-        
+        super(scene, x,y, 'bot');
         scene.add.existing(this);
-        scene.physics.world.enable(this);
-        this.body.onWorldBounds = true;
         this.dmg = 25;
         this.on('animationcomplete', this.animComplete, this);
         this.alive = true;
-        const hx = 600; 
-        this.hp = new HealthBar(scene,x-hx, y-110 );
-        this.timer = scene.time.addEvent({ delay: Phaser.Math.Between(1000, 3000), callback: this.attack, callbackScope: this });
-        this.damageTimer = scene.time.addEvent({delay:1000, loop:true, callback:this.checkCollisionWithEnemies, callbackScope:true});
+        this.enemies = scene.enemies;
+        this.nbrEnemies = scene.nbrEnemies;
+        this.allies = scene.allies;
+        this.nbrAllies = scene.nbrAllies;
+        this.myScene = scene;
+        const hx = x; 
+        this.hp = new HealthBar(scene,x-hx, y-110,this);
+        this.damageTimeroforBot = scene.time.addEvent({delay:1500, loop:true, callback:this.damage(), callbackScope:true});
     }
     preUpdate (time, delta){
         super.preUpdate(time, delta);
-        const isCollidingWithAllies = this.checkCollisionWithAllies();
-        if (isCollidingWithAllies) {
-            this.body.velocity.x = 0;
-        } else {
-            this.body.velocity.x = 50;
-        }
+        if(!this || !this.body) return;
+        this.play('run', true);
+        this.setVelocity(50);
+
+        
     }
     animComplete (animation){
-        if (animation.key === 'Attack1')
-        {
-            this.play('Idle');
+        if (animation.key === 'attack'){
+            this.play('attack', true)
         }
+        if (animation.key === 'run'){
+            this.play('run', true)
+        }
+        if (animation.key === 'idle'){
+            this.play('idle', true)
+        }
+        
+        
     }
     damage(amount){
         if (this.hp.decrease(amount)){
@@ -39,33 +46,42 @@ class Bot extends Phaser.GameObjects.Sprite{
             this.play("dead");
         }
     }
-    // eslint-disable-next-line class-methods-use-this
-    attack(player){
-        player.damage(this.dmg);
+    checkCollisionWithEnemies() {
+        
+        const isColliding = this.myScene.physics.overlap(this, this.allies[this.nbrAllies-1], this.handleCollision, null, this);
+        if (isColliding) {
+                this.handleCollision(this.allies[this.nbrAllies-1]);
+        }
+        
     }
 
-    update(){
-        const hasAllyAhead = this.checkCollisionWithAllies();
-        const hasEnemyAhead = this.checkCollisionWithEnemies();
-
-        if (hasAllyAhead) {
-            this.setVelocityX(0);
-            this.play('idle', true);
-        } else if (hasEnemyAhead) {
-            this.play('attack', true);
-        } else {
-            this.setVelocityX(50);
-            this.play('run', true);
-    }
-
-    
-    }
-
-    checkCollisionWithEnemies(obj){
-        obj.damage(this.dmg);
+    handleCollision (enemy) {
+        this.damageTimeroforBot = this.scene.time.addEvent({
+            delay:1500, 
+            loop:true, callback:  () => {
+                // eslint-disable-next-line no-unused-expressions
+                this.anims.play('attack', true);
+                this.damage(enemy.dmg);
+                this.setVelocity(0);
+            }, 
+            callbackScope:true});
     }
     checkCollisionWithAllies(){
-        this.body.velocity.x = 0;
+        if (this.nbrEnemies>1){
+            this.allies.forEach(ally => {
+                const isSomeoneBefore = this.myScene.physics.overlap(this, ally,this.stop, null ,this)
+                if (isSomeoneBefore){
+                    this.stop();
+                }
+            });
+        }
     }
+    stop(){
+        this.setVelocity(0);
+        this.play('idle', true);
+    }   
+
+   
+    
 }
-export default Bot;
+export default bot;

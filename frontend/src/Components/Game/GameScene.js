@@ -41,18 +41,15 @@ let nbRequired
 let currentAttack = 'attack1'
 let enemy = [];
 let allies = [];
-let nombreAllies;
-let nombreEnemy;
+let nbrAllies;
+let nbrEnemies;
+
 
 let lastTimeInvocation = 0;
 
 class GameScene extends Phaser.Scene {
   constructor() {
     super('game-scene');
-    this.player = undefined;
-    this.bot = undefined;
-    this.knight = undefined;
-    this.cursors = undefined;
     this.scoreLabel = undefined;
     this.gameOver = false;
     this.playerHealth = 20;
@@ -67,9 +64,10 @@ class GameScene extends Phaser.Scene {
     this.enemy= [];
     this.allies= [];
     this.gold = 0;
-    this.nombreAllies=0;
-    this.nombreEnemy=0;
+    this.nbrAllies=0;
+    this.nbrEnemies=0;
     this.lastTimeInvocation = 0;
+    
   }
 
   preload() {
@@ -112,7 +110,7 @@ class GameScene extends Phaser.Scene {
     this.add.image(400, 300, 'sky');
     
     const platforms = this.createPlatforms();
-    this.createBot = this.createBot();
+   
 
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
 
@@ -130,10 +128,8 @@ class GameScene extends Phaser.Scene {
     this.makeAnim();
     this.championkngiht = this.championSelectKngiht();
     // eslint-disable-next-line no-new
-    this.createBot = this.time.addEvent({delay:2000, loop:true, callback: () => {  this.createBot()}, callbackScope:this})
-    
-    /* The Collider takes two objects and tests for collision and performs separation against them.
-    Note that we could call a callback in case of collision... */
+    this.createBotEvent = this.time.addEvent({delay:2000, loop:true, callback: () => { this.createBot(); }, callbackScope:this});
+    this.createKnight();
 
     // create all animations
 
@@ -178,39 +174,45 @@ class GameScene extends Phaser.Scene {
     if (this.gameOver) {
       return;
     }
-    if (this.knight) {
-      this.knight.update(time, delta);
-    }
-    if ((this.bot))
-
-    for(let i=allies.length-1;i>=0;i--){
-      for(let j=allies.length-2;j>=0;j--){
-        if (this.physics.overlap(i,j)){
-          this.alliesCollisionDone=true;
-          this.alliesColission(j,i);
-          j.anims.play('idle', true)
-        }
+    if (nbrAllies>0&& nbrEnemies>0){
+      if (this.physics.overlap(allies[nbrAllies-1], enemy[nbrEnemies-1])){
+        this.fightChamp();
       }
     }
-    if (this.physics.overlap(this.alliesColission))
+    for (let i = 0; i < this.allies.length; i++) {
+      const allyA = this.allies[i];
+  
+      
+    for (let j = i + 1; j < this.allies.length; j++) {
+      const allyB = this.allies[j];
+      if (this.physics.overlap(allyA, allyB)) {
+          this.alliesCollisionDone(allyA,allyB);
+      }
+    }
+  
+
+    
+    
     
     
   
 
     this.physics.world.wrap(this.bot, 0, false);
 
-    
+  }
 
   }
   createBot(){
     const bot = new Bot(this, 600, 400);
     this.enemy.push(bot);
-    this.nombreEnemy++;
+    this.nbrEnemies++;
+    this.physics.add.collider(bot,this.platforms);
   }
   createKnight(){
     const knight = new Knight(this, 50,400);
     this.allies.push(knight)
-    nombreAllies++;
+    this.nbrAllies++;
+    this.physics.add.collider(knight,this.platforms);
   }
 
   createPlatforms() {
@@ -270,6 +272,7 @@ class GameScene extends Phaser.Scene {
 
   championSelectKngiht(){
     const knightChampion = this.add.image(300,100, 'knight1');
+    console.log('Champion selected');
     
     let timer = this.time.now;
     if (timer - lastTimeInvocation >= 2000){
@@ -291,37 +294,6 @@ class GameScene extends Phaser.Scene {
     return knightChampion;
   }
  
-
-  alliesColission(obj1, obj2){
-    const timer = this.time.now;
-    if (obj1 !== allies[nombreAllies-1] && obj2 !== allies[nombreAllies-2] ){
-      obj1.setVelocityX(0);
-      obj2.setVelocityX(0);
-    }
-  }
-  fightChamp(){
-    const allierFighter = allies[nombreAllies-1];
-    const enemyFighter = thid.bot;
-    this.time.addEvent({
-      delay: 50,
-      loop: true,
-      callback: () => {
-        if (this.physics.overlap(this.bot, this.knight)) {
-          bot.setVelocityX(0);
-          bot.anims.play('idle', true);
-        }else if(bot.body.velocity.x < 0) {
-          bot.anims.play('walk', true);
-        } else if(!this.physics.overlap(this.bot, this.player)) {
-          bot.setVelocityX(-50); 
-        } else if (this.physics.overlap(this.bot, this.player)) {
-          this.handlePlayerBotCollision();
-        } else {
-          bot.anims.play('turn', true);
-        }
-      }
-    });
-    
-  }
 
   makeAnim(){
     // KNIGHT
