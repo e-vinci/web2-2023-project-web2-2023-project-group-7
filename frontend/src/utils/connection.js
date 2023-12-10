@@ -3,8 +3,12 @@ const storeUser =  (responseFetch) => {
     localStorage.setItem('project.usrnm',responseFetch.username);
     localStorage.setItem('project.tkn',responseFetch.token);
 }
-// enregistre les scores
-const sentScore = async (username, score) => {
+/**
+ * Enregistre le score d'un utilisateur.
+ *
+ * @param {string} username - Le nom d'utilisateur associé au score.
+ * @param {number} score - Le score à enregistrer.
+ */const sentScore = async (username, score) => {
     try {
         const formData = {
             'username': username,
@@ -29,7 +33,12 @@ const sentScore = async (username, score) => {
         console.error('Request failed:', error.message);
     }
 };
-// Aller chercher le classement
+
+/**
+ * Récupère le classement des utilisateurs.
+ *
+ * @returns {Promise} - Une promesse qui résoudra avec les données du classement ou sera rejetée en cas d'erreur.
+ */
 const getRanking = async  () => {
     // GET car pas besoin de modifier, passer des données & rien de secret
     const response = await fetch('api/users/Ranking', {
@@ -45,5 +54,6 @@ const getRanking = async  () => {
     const responseData = await response.json();
     return responseData;
 }
+
 export { storeUser, sentScore , getRanking };
 

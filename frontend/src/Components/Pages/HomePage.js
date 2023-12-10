@@ -18,13 +18,6 @@ const HomePage = () => {
   homePageContent.style.backgroundPosition = 'center';
   homePageContent.style.backgroundRepeat = 'no-repeat';
 
-  // Si les cookies ne sont pas acceptés, figer complètement la page
-  /* if (!cookiesAccepted) {
-    homePageContent.style.pointerEvents = 'none';
-    homePageContent.style.opacity = '0.5'; // Facultatif : appliquer une opacité pour indiquer que la page est figée
-  }
-*/
-
   const buttonsContainer = document.createElement('div');
   buttonsContainer.classList.add('buttons-container');
 

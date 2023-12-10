@@ -3,9 +3,15 @@ const { register, login } = require('../models/users');
 
 const router = express.Router();
 
-/* Register a user */
+/**
+ * Endpoint to register a new user.
+ *
+ * @route POST /register
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - Express response object.
+ */
 router.post('/register', async (req, res) => {
-  // console.log('fffffffffffffffffffffffffffffffff');
   const username = req?.body?.username?.length !== 0 ? req.body.username : undefined;
   const password = req?.body?.password?.length !== 0 ? req.body.password : undefined;
 
@@ -23,27 +29,35 @@ router.post('/register', async (req, res) => {
 
   return res.json(result);
 });
-/* Login a user */
+
+/**
+ * Endpoint to log in a user.
+ *
+ * @route POST /login
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - Express response object.
+ */
 router.post('/login', async (req, res) => {
   const username = req?.body?.username?.length !== 0 ? req.body.username : undefined;
   const password = req?.body?.password?.length !== 0 ? req.body.password : undefined;
-  // const token = req?.body?.authentification?.length !== 0 ? req.body.authent : undefined;
-
-  // [EIO : DEBUT - Token Test] test si token est présent - TBI
-
-  //  [EIO : FIN - Token Test]
 
   if (!username || !password) return res.sendStatus(400); // 400 Bad Reques
 
   const authenticatedUser = await login(username, password);
 
   if (!authenticatedUser) return res.sendStatus(401); // 401 Unauthorized
-  // req.session.username = authenticatedUser.username;
-  // req.session.token = authenticatedUser.token;
   return res.json(authenticatedUser);
 });
-/* Logout a user */
-router.get('/logout', (req, res) => {
+
+/**
+ * Endpoint to log out a user.
+ *
+ * @route GET /logout
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - Express response object.
+ */router.get('/logout', (req, res) => {
   req.session = null;
   return res.sendStatus(200);
 });

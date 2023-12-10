@@ -8,6 +8,11 @@
 
  import { usePathPrefix } from '../../utils/path-prefix';
 
+ /**
+ * Navigate to a specified URI using the browser's history API.
+ *
+ * @param {string} toUri - The target URI to navigate to.
+ */
  const Navigate = (toUri) => {
    const fromUri = window.location.pathname;
    if (fromUri === toUri) return;

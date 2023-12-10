@@ -14,6 +14,7 @@ Merci de votre compréhension et bonne navigation sur notre site.
 <button id = 'cookie-accept-button' >Accepter</button>
 <button id = 'cookie-info-button' >En savoir plus</button>
 </div>`
+
 // texte info cookie
 const infoTxtcookie = ` <div id="infoCookieTechnique">
 <p>
@@ -30,6 +31,12 @@ const infoTxtcookie = ` <div id="infoCookieTechnique">
 <button id = 'cookie-refus-button' >Refuser</button>
 </div>`
 
+/**
+ * Gère l'affichage d'un bandeau de cookies et les actions associées.
+ *
+ * @param {string} id - L'identifiant de l'élément à verrouiller en cas de refus des cookies.
+ * @returns {boolean} - Retourne true si les cookies ont déjà été acceptés, sinon false.
+ */
 const cookieBandeau = (id) => {
   const acceptCookies = () => {
     const banner = document.getElementById('cookie-banner');

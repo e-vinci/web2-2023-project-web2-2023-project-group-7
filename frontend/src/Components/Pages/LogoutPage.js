@@ -7,8 +7,7 @@ const LogoutPage = () => {
     logoutPageContent.id = 'LogoutPage';
     logoutPageContent.classList.add('logout-page-content');
 
-    // Personnalisez le style de la page de déconnexion selon vos besoins
- 
+    // style 
     const logoutButton = document.createElement('button');
     logoutButton.textContent = 'Logout';
     logoutButton.classList.add('btn', 'btn-danger', 'mt-3');
