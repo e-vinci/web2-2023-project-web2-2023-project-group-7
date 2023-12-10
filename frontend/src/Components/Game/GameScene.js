@@ -7,38 +7,22 @@
 /* eslint-disable lines-between-class-members */
 import Phaser from 'phaser';
 import ScoreLabel from './ScoreLabel';
-import Knight from  './Knight';
+
+import Knight from  './knight';
 import Bot from './Bot';
+import EnemySpawner from './EnemySpawner';
 
 import skyAsset from '../../assets/bosque_tenebre.jpg';
 import platformAsset from '../../assets/platform.png';
-import idleAsset from '../../assets/Samurai/Idle.png';
-import walkAsset from '../../assets/Samurai/Walk.png';
-import jumpAsset from '../../assets/Samurai/Jump.png';
 import healthAsset from '../../assets/health.png';
-import attack1Asset from '../../assets/Samurai/Attack_1.png';
-import attack2Asset from '../../assets/Samurai/Attack_2.png';
-import attack3Asset from '../../assets/Samurai/Attack_3.png';
 import knightpng from '../../assets/knight.png';
 import knightjson from '../../assets/knight.json';
 import knight1 from '../../assets/knight1.png';
-import magepng from '../../assets/mage.png';
-import magejson from '../../assets/mage.json'
-import mage1 from '../../assets/mage1.png'
-import firejson from '../../assets/fire.json'
-import firepng from '../../assets/fire.png'
+import botPng from '../../assets/bot.png'
+import botJson from '../../assets/bot.json'
 
 const GROUND_KEY = 'ground';
-const IDLE_KEY = 'idle';
-const WALK_KEY = 'walk';
-const JUMP_KEY = 'jump';
-const ATTACK1_KEY = 'attack1'
-const ATTACK2_KEY = 'attack2'
-const ATTACK3_KEY = 'attack3'
 let gold;
-let info
-let nbRequired
-let currentAttack = 'attack1'
 let enemy = [];
 let allies = [];
 let nbrAllies;
@@ -52,16 +36,21 @@ class GameScene extends Phaser.Scene {
     super('game-scene');
     this.scoreLabel = undefined;
     this.gameOver = false;
-    this.playerHealth = 20;
-    this.botHealth = 2;
-    this.playerDamage = 1;
-    this.botDamage = 1;
+    this.bot = undefined;
+    this.knight = undefined;
+    // player stats
+    this.knightrHealth = 10;
+    this.knightDamage = 3;
+    // bot stats
+    this.botHealth = 10;
+    this.botDamage = 3;
+    
     this.previousBotHealth = this.botHealth;
+
+    
     this.previousCollisionTime = 0;
     this.interval = 1000;
-    this.isCollisionDone = false;
-    this.alliesCollisionDone = false;
-    this.enemy= [];
+    this.enemies= [];
     this.allies= [];
     this.gold = 0;
     this.nbrAllies=0;
@@ -76,97 +65,43 @@ class GameScene extends Phaser.Scene {
     this.load.image('health', healthAsset);
     this.load.atlas('knight', knightpng, knightjson);
     this.load.image('knight1', knight1);
-    this.load.atlas('mage', magepng, magejson);
-    this.load.image('mage1', mage1)
-    this.load.atlas('fire', firepng, firejson);
+    this.load.atlas('bot', botPng, botJson);
 
-    this.load.spritesheet(IDLE_KEY, idleAsset, {
-      frameWidth: 128,
-      frameHeight: 128,
-    });
-    this.load.spritesheet(WALK_KEY, walkAsset, {
-      frameWidth: 128,
-      frameHeight: 128,
-    });
-    this.load.spritesheet(JUMP_KEY, jumpAsset, {
-      frameWidth: 128,
-      frameHeight: 128,
-    });
-    this.load.spritesheet(ATTACK1_KEY, attack1Asset, {
-      frameWidth: 128,
-      frameHeight: 128,
-    });
-    this.load.spritesheet(ATTACK2_KEY, attack2Asset, {
-      frameWidth: 128,
-      frameHeight: 128,
-    });
-    this.load.spritesheet(ATTACK3_KEY, attack3Asset, {
-      frameWidth: 128,
-      frameHeight: 128,
-    });
+
+    
   }
 
   create() {
     this.add.image(400, 300, 'sky');
-    
+    this.physics.world.gravity.y = 150;
     const platforms = this.createPlatforms();
-   
+    this.debug = true;
+    this.platforms = platforms;
+    this.knight = this.createKnight();
+    
+    this.enemySpawn = new EnemySpawner(this);
+    this.bot = this.createBot();
 
+    this.physics.add.collider(this.knight, this.platforms);
+    this.physics.add.collider(this.bot, this.platforms);   
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
-
-    this.physics.add.collider(this.player, platforms);
-    this.physics.add.collider(this.bot, platforms);
-    this.physics.add.collider(this.knight, platforms);
-    this.physics.add.collider(this.mage, platforms);
-
-    this.cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.world.setBoundsCollision(true, true, true, true);
 
     this.debugShowBody = true;
 
     this.makeAnim();
-    this.championkngiht = this.championSelectKngiht();
-    // eslint-disable-next-line no-new
-    this.createBotEvent = this.time.addEvent({delay:2000, loop:true, callback: () => { this.createBot(); }, callbackScope:this});
+    this.championSelectKngiht();
+    this.createBot();
     this.createKnight();
+    this.fight();
+    this.alliesCollider();
+    this.enemiesCollider();
+    this.championknight = this.championSelectKngiht();
+    // eslint-disable-next-line no-new
+    this.createBotEvent = this.time.addEvent({delay:12000, loop:true, callback: () => { this.createBot(); }, callbackScope:this});
+    
 
-    // create all animations
-
-    this.anims.create({
-      key: 'walk',
-      frames: this.anims.generateFrameNumbers(WALK_KEY, { start: 0, end: 8}),
-      frameRate: 20,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'turn',
-      frames: this.anims.generateFrameNumbers(IDLE_KEY, { start: 0, end: 5 }),
-      frameRate: 20,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'attack1',
-      frames: this.anims.generateFrameNumbers(ATTACK1_KEY, { start: 0, end: 8}),
-      frameRate: 20,
-      repeat: 0,
-    });
-
-    this.anims.create({
-      key: 'attack2',
-      frames: this.anims.generateFrameNumbers(ATTACK2_KEY, { start: 0, end: 8}),
-      frameRate: 20,
-      repeat: 0,
-    });
-
-    this.anims.create({
-      key: 'attack3',
-      frames: this.anims.generateFrameNumbers(ATTACK3_KEY, { start: 0, end: 8}),
-      frameRate: 20,
-      repeat: 0,
-    });
 
   }
 
@@ -174,46 +109,32 @@ class GameScene extends Phaser.Scene {
     if (this.gameOver) {
       return;
     }
-    if (nbrAllies>0&& nbrEnemies>0){
-      if (this.physics.overlap(allies[nbrAllies-1], enemy[nbrEnemies-1])){
-        this.fightChamp();
-      }
-    }
-    for (let i = 0; i < this.allies.length; i++) {
-      const allyA = this.allies[i];
-  
+    if(this.createBotEvent){
       
-    for (let j = i + 1; j < this.allies.length; j++) {
-      const allyB = this.allies[j];
-      if (this.physics.overlap(allyA, allyB)) {
-          this.alliesCollisionDone(allyA,allyB);
+      this.nbrEnemies++;
+    }
+    if (this.championknight){
+      this.nbrAllies++;
+    }
+    for(let i=0; i<nbrAllies-1; i++){
+      if (this.physics.collide(allies[i], allies[i+1])){
+        this.alliesCollider(allies[i])
       }
     }
+    for(let i=0; i<nbrEnemies-1; i++){
+      if (this.physics.collide(this.enemies[i], this.enemies[i+1])){
+        this.enemiesCollider(this.enemies[i])
+      }
+    }
+    if (this.body .physics.overlap(this.allies[nbrAllies-1], this.enemies[nbrEnemies-1])){
+      this.fight(this.allies[nbrAllies-1], this.enemies[nbrEnemies-1])
+    }
+    // eslint-disable-next-line consistent-return
+    if(this.championSelectKngiht)return this.championSelectKngiht;
+  }
+
   
-
-    
-    
-    
-    
   
-
-    this.physics.world.wrap(this.bot, 0, false);
-
-  }
-
-  }
-  createBot(){
-    const bot = new Bot(this, 600, 400);
-    this.enemy.push(bot);
-    this.nbrEnemies++;
-    this.physics.add.collider(bot,this.platforms);
-  }
-  createKnight(){
-    const knight = new Knight(this, 50,400);
-    this.allies.push(knight)
-    this.nbrAllies++;
-    this.physics.add.collider(knight,this.platforms);
-  }
 
   createPlatforms() {
     const platforms = this.physics.add.staticGroup();
@@ -226,38 +147,58 @@ class GameScene extends Phaser.Scene {
     
     return platforms;
   }
+  createBot() {
+    const bot = this.physics.add.sprite(600, 470, 'botidle');
+    bot.enableBody(true, 600, 470, true, true);
+    bot.setBounce(0.2);
+    bot.body.setSize(67,74,true).setOffset(20, 54);
+    bot.setVelocityX(-200);
+    bot.flipX = true;
+    this.enemies.push(bot);
+    this.nbrEnemies++;
+    
+
+    bot.setCollideWorldBounds(true);
+    bot.body.onWorldBounds = true;
+
+    return bot;
+  }
+  createKnight() {
+    const knight = this.physics.add.sprite(20, 470, 'idle');
+    bot.enableBody(true, 600, 470, true, true);
+    bot.setBounce(0.2);
+    bot.body.setSize(67,74,true).setOffset(20, 54);
+    bot.setVelocityX(-50);
+    bot.flipX = false;
+    this.allies.push(knight);
+    this.nbrAllies++;
+
+    bot.setCollideWorldBounds(true);
+    bot.body.onWorldBounds = true;
+
+    return knight;
+  }
 
 
+  
+  fight(obj1,obj2){
+    obj1.body.setVelocityX(0)
+    obj1.anims.play('attack', true)
+    obj1.damage(obj2.dmg)
+    obj2.body.setVelocityX(0)
+    obj2.anims.play('botattack', true)
+    obj2.damage(obj1.dmg)
 
-  handleHealth(){
-
-    this.botHealth -= this.playerDamage;
-    this.playerHealth -= this.botDamage;
-    this.scoreLabel.add(100);
-
-    if(this.playerHealth <= 0){
-      this.player.disableBody(true, true);
-      this.scoreLabel.setText(`GAME OVER : ( \nYour Score = ${this.scoreLabel.score}`);
-
-      this.player.setTint(0xff0000);
-
-      this.gameOver = true;
-      
-    } else if(this.botHealth <1){
-      this.bot.disableBody(true, true);
-      this.scoreLabel.add(this.previousBotHealth);
-      
-      setTimeout(() => {
-        this.bot.enableBody(true, 600, 470, true, true);
-        // increments bot health by 1 each time it respawns making it harder
-        this.botHealth = this.previousBotHealth + 1;
-        this.playerHealth += 20;
-
-        this.previousBotHealth = this.botHealth;
-      }, 2000);
-    }
-    nbRequired.setText(this.botHealth/this.playerDamage);
-    info.setText(this.playerHealth);
+  }
+  alliesCollider(obj1){
+    obj1.body.setVelocityX(0)
+    obj1.anims.play('idle', true)
+    
+  }
+  enemiesCollider(obj1){
+    obj1.body.setVelocityX(0)
+    obj1.anims.play('botidle', true)
+    
   }
 
 
@@ -312,11 +253,6 @@ class GameScene extends Phaser.Scene {
       frames : this.anims.generateFrameNames('knight', {prefix:"idle_",start:1, end:8, zeroPad:1, suffix:'.png' }),
       frameRate: 8, repeat:-1
     });
-    this.anims.create({
-      key: 'attack2',
-      frames : this.anims.generateFrameNames('knight', {prefix:"sp_atk_", start:1, end:18, zeroPad:1, suffix:'.png' }),
-      frameRate: 10, repeat:0
-    });
 
     // MAGE
     this.anims.create({
@@ -351,7 +287,27 @@ class GameScene extends Phaser.Scene {
       frameRate: 10, repeat:-1
     });
     
-
+    // BOT
+    this.anims.create({
+      key: 'botrun',
+      frames: this.anims.generateFrameNames('bot', {prefix: "run_", start:1, end:8, zeroPad:1, suffix:".png"}),
+      frameRate:12, repeat:-1
+    });
+    this.anims.create({
+      key: 'botidle',
+      frames: this.anims.generateFrameNames('bot', {prefix: "idle_", start:1, end:6, zeroPad:1, suffix:".png"}),
+      frameRate:10, repeat:-1
+    });
+    this.anims.create({
+      key: 'botattack',
+      frames: this.anims.generateFrameNames('bot', {prefix: "1_atk_", start:1, end:6, zeroPad:1, suffix:".png"}),
+      frameRate:10, repeat:-1
+    });
+    this.anims.create({
+      key: 'botdeath',
+      frames: this.anims.generateFrameNames('bot', {prefix: "death_", start:1, end:18, zeroPad:1, suffix:".png"}),
+      frameRate:10, repeat:-1
+    });
     
   };
 

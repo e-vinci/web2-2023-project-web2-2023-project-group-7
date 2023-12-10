@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable lines-between-class-members */
 import Phaser from 'phaser';
 import HealthBar from './HealthBar'
@@ -6,7 +7,10 @@ import HealthBar from './HealthBar'
 class Knight extends Phaser.GameObjects.Sprite{
     constructor(scene, x,y){
         super(scene, x,y, 'knight');
+        
         scene.add.existing(this);
+        scene.physics.add.existing(this);
+
         this.dmg = 25;
         this.on('animationcomplete', this.animComplete, this);
         this.alive = true;
@@ -15,16 +19,23 @@ class Knight extends Phaser.GameObjects.Sprite{
         this.allies = scene.allies;
         this.nbrAllies = scene.nbrAllies;
         this.myScene = scene;
+        this.debug = true;
         const hx = x; 
         this.hp = new HealthBar(scene,x-hx, y-110,this);
-        this.damageTimeroforknight = scene.time.addEvent({delay:1500, loop:true, callback:this.damage(), callbackScope:true});
+        this.damageTimeroforknight = scene.time.addEvent({delay:1500, loop:true, callback:() => this.damage(), callbackScope:true});
+       
         
     }
     preUpdate (time, delta){
         super.preUpdate(time, delta);
+        this.myScene.physics.add.Sprite(this.x,this.y)
         if(!this || !this.body) return;
+        this.myScene.physics.world.wrap(this, 0, true);
+        
+        // eslint-disable-next-line no-plusplus
         this.play('run', true);
-        this.setVelocity(50);
+        this.body.setVelocityX(20)
+        
 
         
     }
@@ -47,38 +58,31 @@ class Knight extends Phaser.GameObjects.Sprite{
             this.play("dead");
         }
     }
-    checkCollisionWithEnemies() {
+    update(){
         
-        const isColliding = this.myScene.physics.overlap(this, this.enemies[this.nbrEnemies-1], this.handleCollision, null, this);
-        if (isColliding) {
-                this.handleCollision(this.enemies[this.nbrEnemies-1]);
+        if (this.myScene.physics.overlap(this, this.enemies[this.nbrEnemies-1])){
+            this.handleCollision(this.enemies(this.nbrEnemies-1))
         }
-        
+        for(let i = 0; i<this.nbrAllies; i++){
+            if (this.allies[i] === this && this !== this.enemies[this.nbrEnemies-1] && this.myScene.physics.overlap(this, this.enemies[i])){
+                this.stop();
+            }
+        }
     }
 
     handleCollision (enemy) {
         this.damageTimeroforknight = this.scene.time.addEvent({
-            delay:1500, 
+            delay:1500,
             loop:true, callback:  () => {
                 // eslint-disable-next-line no-unused-expressions
                 this.anims.play('attack', true);
                 this.damage(enemy.dmg);
-                this.setVelocity(0);
+                this.setVelocityX(0);
             }, 
             callbackScope:true});
     }
-    checkCollisionWithAllies(){
-        if (this.nbrAllies>1){
-            this.allies.forEach(ally => {
-                const isSomeoneBefore = this.myScene.physics.overlap(this, ally,this.stop, null ,this)
-                if (isSomeoneBefore){
-                    this.stop();
-                }
-            });
-        }
-    }
     stop(){
-        this.setVelocity(0);
+        this.setVelocityX(0);
         this.play('idle', true);
     }   
 
