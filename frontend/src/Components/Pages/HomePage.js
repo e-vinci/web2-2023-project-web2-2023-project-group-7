@@ -1,6 +1,8 @@
 import ecrandefondhomepage from '../../assets/Capture.png';
 
-import cookieMgt from '../../utils/cookieMgt'
+import cookieMgt from '../../utils/cookieMgt';
+
+import demanderConsentement from '../../utils/consentement';
 
 const HomePage = () => {
 
@@ -47,7 +49,9 @@ const HomePage = () => {
 
   // Ajout de la nouvelle structure à la page principale
   main.appendChild(homePageContent);
-
+  // Appelez la fonction demanderConsentement
+  demanderConsentement();
+  // Appelez la fonction cookieMgt
   cookieMgt(homePageContent.id);
 };
 export default HomePage;
