@@ -1,3 +1,4 @@
+/* eslint-disable lines-between-class-members */
 import Phaser from 'phaser';
 import ScoreLabel from './ScoreLabel';
 import EnemySpawner from './EnemySpawner';
@@ -56,6 +57,7 @@ class GameScene extends Phaser.Scene {
     this.load.image('obscurity', skyAsset);
     this.load.image(GROUND_KEY, platformAsset);
     this.load.image('health', healthAsset);
+
 
     this.load.spritesheet(IDLE_KEY, idleAsset, {
       frameWidth: 128,
@@ -153,8 +155,8 @@ class GameScene extends Phaser.Scene {
 
   update() {
     if (this.gameOver) {
-      return;
-    }
+      this.endGame();
+    } else {
 
     this.physics.world.wrap(this.bot, 0, false);
 
@@ -178,6 +180,7 @@ class GameScene extends Phaser.Scene {
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-400);
     }
+  }
   }
 
   createPlatforms() {
@@ -230,6 +233,7 @@ class GameScene extends Phaser.Scene {
         } else {
           bot.anims.play('turn', true);
         }
+        
       }
     });
 
@@ -389,6 +393,9 @@ class GameScene extends Phaser.Scene {
     this.add.existing(label);
 
     return label;
+  }
+  endGame(){
+    return this.scene.start('EndGame',{gameover : this.gameOver });
   }
 
 }
