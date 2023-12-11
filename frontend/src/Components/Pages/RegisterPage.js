@@ -70,6 +70,12 @@ const ConnectionPage = () => {
       return;
 
     }
+    if(username.input.value.length <4){
+      alert("user has too many characters");
+      ConnectionPage();
+      return;
+
+    }
  
     // Build the FormData object from the form values
     const formData = {
