@@ -2,7 +2,7 @@
 function demanderConsentement() {
     // Utiliser la boîte de confirmation pour demander le consentement de l'utilisateur
     const consentement = window.confirm("En utilisant ce site web, vous acceptez les Conditions Générales d'Utilisation. Voulez-vous continuer?");
-
+    
     // Vérifier la réponse de l'utilisateur
     if (consentement) {
         

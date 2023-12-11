@@ -49,8 +49,11 @@ const HomePage = () => {
 
   // Ajout de la nouvelle structure à la page principale
   main.appendChild(homePageContent);
-  // Appelez la fonction demanderConsentement
-  demanderConsentement();
+  if(!localStorage.getItem('consentementUtilisateur')){
+    // Appelez la fonction demanderConsentement
+    demanderConsentement();
+  }
+  
   // Appelez la fonction cookieMgt
   cookieMgt(homePageContent.id);
 };
