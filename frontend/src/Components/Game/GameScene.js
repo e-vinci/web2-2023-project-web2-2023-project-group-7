@@ -150,14 +150,13 @@ class GameScene extends Phaser.Scene {
       frameRate: 20,
       repeat: 0,
     });
-
+    
   }
 
   update() {
-    if (this.gameOver) {
-      this.endGame();
-    } else {
-
+    if (this.gameOver){
+      this.jumpToSceneEndGame();
+    }
     this.physics.world.wrap(this.bot, 0, false);
 
     if (this.physics.overlap(this.player, this.bot)) {
@@ -179,8 +178,13 @@ class GameScene extends Phaser.Scene {
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-400);
-    }
+    
   }
+  }
+  jumpToSceneEndGame(){
+    
+    this.scene.start('EndGame')
+    
   }
 
   createPlatforms() {
@@ -394,9 +398,7 @@ class GameScene extends Phaser.Scene {
 
     return label;
   }
-  endGame(){
-    return this.scene.start('EndGame',{gameover : this.gameOver });
-  }
+  
 
 }
 

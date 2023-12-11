@@ -8,7 +8,7 @@ class EndGame extends Phaser.Scene {
 
     constructor ()
     {
-        super({ key: 'EndGame', active: true });
+        super('EndGame');
         
     }
     preload (){
@@ -17,16 +17,17 @@ class EndGame extends Phaser.Scene {
         this.load.image('restart', restart);
     }
 
-    create (data)
-    {
-        // eslint-disable-next-line no-unused-vars
-        const {gameover} = data;
-        this.add.image(300,400, 'endgame')
-        const reset = this.add.image(300, 350, 'restart');
+    create ()
+    {       
+        this.add.image(400,300, 'endgame')
+        const reset = this.add.image(400, 430, 'restart');
         reset.setInteractive();
-        reset.on('pointerdown', () => {
-            this.scene.scene('game-scene');
-        })
+        reset.on('pointerdown', this.restartGame.bind(this))
+        
+    }
+    // eslint-disable-next-line class-methods-use-this
+    restartGame(){
+        window.location.href = '/game';
     }
 }
 export default EndGame;
