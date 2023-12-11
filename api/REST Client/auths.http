@@ -36,3 +36,11 @@ Content-Type: application/json
     "username":"manager",
     "password":"manager"
 }
+### Login the manager user
+POST {{baseUrl}}/users/writescore
+Content-Type: application/json
+
+{
+    "username":"manager",
+    "score":"300"
+}
