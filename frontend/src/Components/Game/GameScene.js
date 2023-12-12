@@ -7,9 +7,6 @@
 /* eslint-disable lines-between-class-members */
 import Phaser from 'phaser';
 import ScoreLabel from './ScoreLabel';
-
-import Knight from  './knight';
-import Bot from './Bot';
 import EnemySpawner from './EnemySpawner';
 
 import skyAsset from '../../assets/bosque_tenebre.jpg';
@@ -36,18 +33,7 @@ class GameScene extends Phaser.Scene {
     super('game-scene');
     this.scoreLabel = undefined;
     this.gameOver = false;
-    this.bot = undefined;
-    this.knight = undefined;
-    // player stats
-    this.knightrHealth = 10;
-    this.knightDamage = 3;
-    // bot stats
-    this.botHealth = 10;
-    this.botDamage = 3;
-    
-    this.previousBotHealth = this.botHealth;
-
-    
+ 
     this.previousCollisionTime = 0;
     this.interval = 1000;
     this.enemies= [];
@@ -73,17 +59,12 @@ class GameScene extends Phaser.Scene {
 
   create() {
     this.add.image(400, 300, 'sky');
-    this.physics.world.gravity.y = 150;
     const platforms = this.createPlatforms();
-    this.debug = true;
-    this.platforms = platforms;
-    this.knight = this.createKnight();
-    
     this.enemySpawn = new EnemySpawner(this);
-    this.bot = this.createBot();
+    this.platforms = platforms;
+    this.createBot();
+    this.createKnight()
 
-    this.physics.add.collider(this.knight, this.platforms);
-    this.physics.add.collider(this.bot, this.platforms);   
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
 
     this.physics.world.setBoundsCollision(true, true, true, true);
@@ -91,50 +72,53 @@ class GameScene extends Phaser.Scene {
     this.debugShowBody = true;
 
     this.makeAnim();
-    this.championSelectKngiht();
-    this.createBot();
-    this.createKnight();
-    this.fight();
-    this.alliesCollider();
-    this.enemiesCollider();
+    
+
+    
     this.championknight = this.championSelectKngiht();
     // eslint-disable-next-line no-new
+    if (nbrEnemies<10){
     this.createBotEvent = this.time.addEvent({delay:12000, loop:true, callback: () => { this.createBot(); }, callbackScope:this});
+    }
     
 
 
   }
+  
 
   update() {
     if (this.gameOver) {
       return;
     }
-    if(this.createBotEvent){
-      
-      this.nbrEnemies++;
-    }
-    if (this.championknight){
-      this.nbrAllies++;
-    }
-    for(let i=0; i<nbrAllies-1; i++){
-      if (this.physics.collide(allies[i], allies[i+1])){
-        this.alliesCollider(allies[i])
-      }
-    }
-    for(let i=0; i<nbrEnemies-1; i++){
-      if (this.physics.collide(this.enemies[i], this.enemies[i+1])){
-        this.enemiesCollider(this.enemies[i])
-      }
-    }
-    if (this.body .physics.overlap(this.allies[nbrAllies-1], this.enemies[nbrEnemies-1])){
-      this.fight(this.allies[nbrAllies-1], this.enemies[nbrEnemies-1])
-    }
-    // eslint-disable-next-line consistent-return
-    if(this.championSelectKngiht)return this.championSelectKngiht;
-  }
+    const lastEnemy = this.enemies[nbrEnemies - 1];
+    const lastAlly = this.allies[nbrAllies - 1];
 
-  
-  
+    if (lastEnemy && lastEnemy.body && lastAlly && lastAlly.body) {
+      if (this.physics.overlap(lastEnemy, lastAlly)) {
+        lastAlly.body.setVelocityX(0);
+        lastEnemy.body.setVelocityX(0)
+        const damageEvent = this.time.addEvent({
+          delay: 1500, // toutes les 2 secondes
+          loop: true,
+          callback: () => {
+              lastEnemy.anims.play('botattack', true)
+              lastAlly.anims.play('attack', true)
+              lastEnemy.hp -= 20;
+              lastAlly.hp -= 25;
+              if (lastAlly.hp <= 0 ) {
+                  lastAlly.anims.play('death', true)
+              }
+              if ( lastEnemy.hp <= 0){
+                lastEnemy.anims.play('botdeath', true)
+              }
+              
+          },
+          callbackScope: this
+      });
+      }
+    }
+
+  }
 
   createPlatforms() {
     const platforms = this.physics.add.staticGroup();
@@ -148,58 +132,72 @@ class GameScene extends Phaser.Scene {
     return platforms;
   }
   createBot() {
-    const bot = this.physics.add.sprite(600, 470, 'botidle');
-    bot.enableBody(true, 600, 470, true, true);
-    bot.setBounce(0.2);
-    bot.body.setSize(67,74,true).setOffset(20, 54);
-    bot.setVelocityX(-200);
-    bot.flipX = true;
+    const bot = this.physics.add.sprite(600,470,'bot').setBounce(0).setCollideWorldBounds(true);
+    bot.hp = 100;
+    bot.setGravityY(150)
+    this.physics.add.collider(bot, this.platforms);
     this.enemies.push(bot);
-    this.nbrEnemies++;
+    nbrEnemies++;
+    console.log('Creating bot. Number of enemies:', nbrEnemies);
+    bot.flipX = true;
+    bot.setVelocityX(-50);
+    bot.body.setSize(50, 0, 50, 5);
     
+  this.enemies.forEach(bad => {
+    if (bot !== bad) {
+        this.physics.add.collider(bot, bad, (thisBot, otherBot) => {
+          if (bot.x < otherBot.x) {
+            // Le bot est à gauche de l'autre bot, arrêtez-le
+            otherBot.body.setVelocityX(0);
+            otherBot.anims.play('botidle', true)
+        }
+        });
+    }
+});
+this.allies.forEach(good => {
+    this.physics.add.collider(bot, good, (thisBot, otherGood) => {
+        thisBot.body.setVelocityX(0);
+        thisBot.anims.play('botattack', true);
+        otherGood.body.setVelocityX(0);
+        otherGood.anims.play('attack',true);
+    });
+});
 
-    bot.setCollideWorldBounds(true);
-    bot.body.onWorldBounds = true;
 
     return bot;
   }
   createKnight() {
-    const knight = this.physics.add.sprite(20, 470, 'idle');
-    bot.enableBody(true, 600, 470, true, true);
-    bot.setBounce(0.2);
-    bot.body.setSize(67,74,true).setOffset(20, 54);
-    bot.setVelocityX(-50);
-    bot.flipX = false;
+    const knight = this.physics.add.sprite(50,470,'knight').setBounce(0).setCollideWorldBounds(true);
+    knight.hp = 100;
+    knight.setGravityY(150)
+    this.physics.add.collider(knight, this.platforms);
     this.allies.push(knight);
-    this.nbrAllies++;
-
-    bot.setCollideWorldBounds(true);
-    bot.body.onWorldBounds = true;
-
+    nbrAllies++;
+    knight.setVelocityX(50)
+    knight.body.setSize(50, 0, 50, 5);
+    this.allies.forEach(good => {
+      if (knight !== good) {
+          this.physics.add.collider(knight, good, (thisknight, otherKnight) => {
+            if (knight.x > otherKnight.x) {
+              // Le bot est à gauche de l'autre bot, arrêtez-le
+              otherKnight.body.setVelocityX(0);
+              otherKnight.anims.play('idle', true)
+          }
+          });
+      }
+  });
+  this.enemies.forEach(bad => {
+      this.physics.add.collider(knight, bad, (thisKnight, otherBad) => {
+          thisKnight.body.setVelocityX(0);
+          thisKnight.anims.play('attack', true);
+          otherBad.body.setVelocityX(0);
+          otherBad.anims.play('botattack',true);
+      });
+  });
+    
     return knight;
   }
-
-
   
-  fight(obj1,obj2){
-    obj1.body.setVelocityX(0)
-    obj1.anims.play('attack', true)
-    obj1.damage(obj2.dmg)
-    obj2.body.setVelocityX(0)
-    obj2.anims.play('botattack', true)
-    obj2.damage(obj1.dmg)
-
-  }
-  alliesCollider(obj1){
-    obj1.body.setVelocityX(0)
-    obj1.anims.play('idle', true)
-    
-  }
-  enemiesCollider(obj1){
-    obj1.body.setVelocityX(0)
-    obj1.anims.play('botidle', true)
-    
-  }
 
 
   createScoreLabel(x, y, score) {
@@ -215,14 +213,11 @@ class GameScene extends Phaser.Scene {
     const knightChampion = this.add.image(300,100, 'knight1');
     console.log('Champion selected');
     
-    let timer = this.time.now;
-    if (timer - lastTimeInvocation >= 2000){
-      knightChampion.setInteractive();
+    knightChampion.setInteractive();
       knightChampion.on('pointerdown',() => {
-        this.createKnight();
-        lastTimeInvocation = this.time.now()});
-    }
-    
+      this.createKnight();
+      console.log('knight creat');});
+        
     const borderWidth = 4;
     const borderColor = 0xff0000;
    
