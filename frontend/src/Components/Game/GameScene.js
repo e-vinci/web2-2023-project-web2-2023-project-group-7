@@ -4,6 +4,7 @@ import ScoreLabel from './ScoreLabel';
 import skyAsset from '../../assets/bosque_tenebre.jpg';
 import platformAsset from '../../assets/platform.png';
 import healthAsset from '../../assets/health.png';
+import mysteryAsset from '../../assets/mystery.png';
 
 import idleAsset from '../../assets/Samurai/Idle.png';
 import walkAsset from '../../assets/Samurai/Walk.png';
@@ -45,6 +46,7 @@ const ATTACK2ZW_KEY = 'attack2ZW'
 const ATTACK3ZW_KEY = 'attack3ZW'
 
 let info
+let mysteryInfo
 let currentAttack = 'attack1'
 let zCurrentAttack = 'attack1Z'
 
@@ -70,7 +72,6 @@ class GameScene extends Phaser.Scene {
     this.previousCollisionTime = 0;
     this.interval = 1000;
     this.isCollisionDone = false;
-    this.healthBonus = undefined;
     this.isCollected = false;
     this.idleTime = 0;
     this.isZombieMan = false;
@@ -80,6 +81,7 @@ class GameScene extends Phaser.Scene {
     this.load.image('obscurity', skyAsset);
     this.load.image(GROUND_KEY, platformAsset);
     this.load.image('health', healthAsset);
+    this.load.image('mystery', mysteryAsset);
 
     this.load.spritesheet(IDLE_KEY, idleAsset, {
       frameWidth: 128,
@@ -149,11 +151,13 @@ class GameScene extends Phaser.Scene {
   create() {
     this.add.image(400, 300, 'obscurity');
     this.createHealth();
+    this.createMystery();
     this.platforms = this.createPlatforms();
     this.player = this.createPlayer();
     this.bot = this.createBot();
 
-    this.healthBonus = this.createHealthBonus()
+    this.createHealthBonus()
+    this.createMysteryBonus();
 
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
 
@@ -267,6 +271,12 @@ class GameScene extends Phaser.Scene {
     return hp;
   }
   
+  createMystery(){
+    const mysteryText = this.add.text(60,120, 'Mystery:');
+    mysteryInfo = this.add.text(140,120, 'Aucun mystery récupéré');
+    return mysteryText;
+  }
+
   createBot() {
     let botSprite
     if(this.isZombieMan) {
@@ -457,7 +467,7 @@ class GameScene extends Phaser.Scene {
 
   createHealthBonus(){
     this.time.addEvent({
-      delay: Phaser.Math.Between(2000,10000),
+      delay: Phaser.Math.Between(5000,30000),
       loop: true,
       callback: () => {
         if(!this.gameOver){
@@ -488,6 +498,64 @@ class GameScene extends Phaser.Scene {
       this.playerHealth = this.playerMaxHealth;
     }
     this.isCollected = true;
+    info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
+  }
+
+  createMysteryBonus(){
+    this.time.addEvent({
+      delay: Phaser.Math.Between(30000,120000),
+      loop: true,
+      callback: () => {
+        if(!this.gameOver){
+          const x = this.player.x + Phaser.Math.Between(-200,200);
+          const y = this.player.y - 200;
+          const mystery = this.physics.add.sprite(x, y, 'mystery');
+
+          this.physics.add.overlap(this.player, mystery, () => {
+            this.collectMysteryBonus();
+            mystery.destroy();
+          });
+
+          mystery.setGravityY(300);
+          mystery.setBounce(0.8);
+
+          mystery.setCollideWorldBounds(true);
+          mystery.body.onWorldBounds = true;
+          
+          this.physics.add.collider(mystery, this.platforms);
+        }
+      },
+    });
+  }
+
+  collectMysteryBonus() {
+    const randomGeneratedNumber = Phaser.Math.Between(1,6);
+
+    if(randomGeneratedNumber === 1){
+      this.playerMaxHealth *= 10;
+      this.playerHealth = this.playerMaxHealth;
+      mysteryInfo.setText('Points de vies du joueur multiplié par dix et regen complet')
+    } else if (randomGeneratedNumber === 2){
+      this.playerMaxHealth /= 2;
+      this.playerDamage = 2;
+      mysteryInfo.setText('Points de vies du joueur divisé par 2, dégats réinitialisé a 2')
+    } else if (randomGeneratedNumber === 3){
+      this.playerHealth = this.playerMaxHealth;
+      this.botMaxDamage -= 5;
+      mysteryInfo.setText('Points de vies régénérés, dégats max du zombie réduits de 5')
+    } else if (randomGeneratedNumber === 4){
+      this.playerHealth = 1;
+      this.playerDamage = 1;
+      mysteryInfo.setText('Points de vies et dégats réinitialisés a 1')
+    } else if (randomGeneratedNumber === 5){
+      this.playerDamage *= 2;
+      this.botMaxHealth /= 2;
+      mysteryInfo.setText('Dégats du joueur multiplié par deux, points de vies max du zombie divisé par 2')
+    } else {
+      this.botMaxDamage += this.playerMaxHealth*0.1;
+      mysteryInfo.setText('le zombie fait désormais au maximum ses anciens dégats max additionné a 10% des points de vies du joueur')
+    }
+    
     info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
   }
 
