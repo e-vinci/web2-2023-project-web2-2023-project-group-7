@@ -82,7 +82,6 @@ class GameScene extends Phaser.Scene {
     this.load.image(GROUND_KEY, platformAsset);
     this.load.image('health', healthAsset);
 
-
     this.load.spritesheet(IDLE_KEY, idleAsset, {
       frameWidth: 128,
       frameHeight: 128,
@@ -167,18 +166,15 @@ class GameScene extends Phaser.Scene {
     this.physics.world.setBoundsCollision(true, true, true, true);
 
     this.debugShowBody = false;
-
-    
+  
     /* The Collider takes two objects and tests for collision and performs separation against them.
     Note that we could call a callback in case of collision... */
 
     // create all animations
     this.createAnims();
     this.reset();
-    
-    
-    
   }
+
   reset(){
     if (this.scene) {
       this.events.on('resetData', async () => {
@@ -212,8 +208,7 @@ class GameScene extends Phaser.Scene {
 
   update() {
     if (this.gameOver){
-      console.log('game is over');
-      
+      console.log('game is over');    
       
       // Check if this.events is defined before emitting the event
       if (this.events) {
@@ -250,14 +245,13 @@ class GameScene extends Phaser.Scene {
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-400);
     
+    }
   }
-  }
-  jumpToSceneEndGame(){
 
+  jumpToSceneEndGame(){
     this.scene.start('EndGame');
   }
   
-
   createPlatforms() {
     const platforms = this.physics.add.staticGroup();
 
@@ -279,7 +273,6 @@ class GameScene extends Phaser.Scene {
     return hp;
   }
   
-
   createBot() {
     let botSprite
     if(this.isZombieMan) {
@@ -330,7 +323,6 @@ class GameScene extends Phaser.Scene {
 
     bot.setCollideWorldBounds(true);
     bot.body.onWorldBounds = true;
- 
 
     this.physics.world.on('worldbounds', (body) => {
       if(body.gameObject === bot) {
@@ -407,8 +399,7 @@ class GameScene extends Phaser.Scene {
             this.bot.anims.play('attack3ZM');
           } else {this.bot.anims.play('attack3ZW');
           }
-        }
-        
+        }       
         
         this.time.addEvent({
           delay: 280,
@@ -506,7 +497,6 @@ class GameScene extends Phaser.Scene {
     this.isCollected = true;
     info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
   }
-
 
   createAnims(){
     this.anims.create({
@@ -613,7 +603,6 @@ class GameScene extends Phaser.Scene {
       frameRate: 20,
       repeat: 0,
     });
-
   }
 
   createScoreLabel(x, y, score) {
@@ -623,9 +612,7 @@ class GameScene extends Phaser.Scene {
     this.add.existing(label);
 
     return label;
-  }
-  
-
+  } 
 }
 
 export default GameScene;
