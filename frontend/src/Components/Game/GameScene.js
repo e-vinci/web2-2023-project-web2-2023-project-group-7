@@ -242,9 +242,7 @@ class GameScene extends Phaser.Scene {
     
     }
   }
-  jumpToSceneEndGame(){
-    this.scene.start('EndGame');
-  }
+  
   
 
   createPlatforms() {
