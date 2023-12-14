@@ -150,12 +150,59 @@ class GameScene extends Phaser.Scene {
       frameRate: 20,
       repeat: 0,
     });
+    this.reset();
     
+    
+    
+  }
+  reset(){
+    if (this.scene) {
+      this.events.on('resetData', async () => {
+        console.log('creat game');
+        this.player.setPosition(140, 470);
+        this.player.setVelocity(0, 0);
+        this.gameOver = false;
+            
+            // Réinitialiser d'autres données du jeu
+        this.bot.setPosition(600, 470);
+        this.bot.setVelocityX(-200);
+        this.playerHealth = 20;
+        this.playerMaxHealth = 100;
+       this.playerDamage = 1;
+    // bot stats
+        this.botMaxHealth = 5;
+       this.botMaxDamage = 3;
+        await this.scene.restart();
+        this.scoreLabel.setScore(0);
+        info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
+        nbRequired.setText(this.botHealth / this.playerDamage);
+        
+        console.log('game reset finsh');
+        this.events.emit('ready');
+        console.log('envoyer ready');
+        console.log('game reset finish');
+        this.jumpToSceneEndGame();
+      }, this)
+    }
   }
 
   update() {
     if (this.gameOver){
-      this.jumpToSceneEndGame();
+      console.log('game is over');
+      
+      
+      // Check if this.events is defined before emitting the event
+      if (this.events) {
+        this.events.emit('resetData');
+        console.log('reset data envoyé');
+        
+    } else {
+        console.error('Cannot access events: events is undefined.');
+    }
+      this.events.on('ready' , () => {
+        console.log('before jumping end gamescene');
+        
+      })
     }
     this.physics.world.wrap(this.bot, 0, false);
 
@@ -182,10 +229,10 @@ class GameScene extends Phaser.Scene {
   }
   }
   jumpToSceneEndGame(){
-    
-    this.scene.start('EndGame')
-    
+
+    this.scene.start('EndGame');
   }
+  
 
   createPlatforms() {
     const platforms = this.physics.add.staticGroup();

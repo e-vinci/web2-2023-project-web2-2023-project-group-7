@@ -9,7 +9,7 @@ class EndGame extends Phaser.Scene {
     constructor ()
     {
         super('EndGame');
-        
+        this.ready = false;
     }
     preload (){
         
@@ -20,14 +20,20 @@ class EndGame extends Phaser.Scene {
     create ()
     {       
         this.add.image(400,300, 'endgame')
-        const reset = this.add.image(400, 430, 'restart');
-        reset.setInteractive();
-        reset.on('pointerdown', this.restartGame.bind(this))
+        const reset = this.add.image(400, 430, 'restart').setInteractive()
+        console.log('interactivity done');
+        const gameScene = this.scene.get('game-scene');
+        console.log(gameScene);
+        reset.on('pointerdown', () => {
+            console.log('bouton on');
+            this.scene.start('game-scene')
+            console.log('gamescene scitch');
+            console.log(gameScene);
+            console.log(this);
+        });
+        
         
     }
     // eslint-disable-next-line class-methods-use-this
-    restartGame(){
-        window.location.href = '/game';
-    }
 }
 export default EndGame;
