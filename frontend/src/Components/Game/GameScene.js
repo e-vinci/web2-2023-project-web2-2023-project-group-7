@@ -533,7 +533,7 @@ class GameScene extends Phaser.Scene {
     if(randomGeneratedNumber === 1){
       this.playerMaxHealth *= 2;
       this.playerHealth = this.playerMaxHealth;
-      mysteryInfo.setText('Points de vies du joueur multiplié par dix et regen complet')
+      mysteryInfo.setText('Points de vies du joueur multiplié par deux et regen complet')
     } else if (randomGeneratedNumber === 2){
       this.playerMaxHealth /= 2;
       this.playerDamage = 2;
