@@ -155,7 +155,7 @@ class GameScene extends Phaser.Scene {
     this.platforms = this.createPlatforms();
     this.player = this.createPlayer();
     this.bot = this.createBot();
-
+    
     this.createHealthBonus()
     this.createMysteryBonus();
 
@@ -229,11 +229,11 @@ class GameScene extends Phaser.Scene {
     }
     
     if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-300);
+      this.player.setVelocityX(-150);
       this.player.anims.play('walk', true);
       this.player.flipX = true;
     } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(300);
+      this.player.setVelocityX(150);
       this.player.anims.play('walk', true);
       this.player.flipX = false;
     } else if(!this.physics.overlap(this.player, this.bot)){
@@ -242,7 +242,7 @@ class GameScene extends Phaser.Scene {
     }
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-400);
+      this.player.setVelocityY(-300);
     
     }
   }
@@ -340,6 +340,7 @@ class GameScene extends Phaser.Scene {
   createPlayer() {
     const player = this.physics.add.sprite(140, 470, IDLE_KEY);
     player.setBounce(0.2);
+    
     player.body.setSize(67,74,true).setOffset(20,54);
     /* The 'left' animation uses frames 0, 1, 2 and 3 and runs at 10 frames per second.
     The 'repeat -1' value tells the animation to loop.
