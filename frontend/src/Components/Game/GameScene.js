@@ -163,15 +163,14 @@ class GameScene extends Phaser.Scene {
         this.player.setVelocity(0, 0);
         this.gameOver = false;
             
-            // Réinitialiser d'autres données du jeu
+        // reset game data
         this.bot.setPosition(600, 470);
         this.bot.setVelocityX(-200);
         this.playerHealth = 20;
         this.playerMaxHealth = 100;
-       this.playerDamage = 1;
-    // bot stats
+        this.playerDamage = 1;
         this.botMaxHealth = 5;
-       this.botMaxDamage = 3;
+        this.botMaxDamage = 3;
         await this.scene.restart();
         this.scoreLabel.setScore(0);
         info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
@@ -228,8 +227,8 @@ class GameScene extends Phaser.Scene {
     
   }
   }
-  jumpToSceneEndGame(){
 
+  jumpToSceneEndGame(){
     this.scene.start('EndGame');
   }
   
