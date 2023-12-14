@@ -45,7 +45,6 @@ const ATTACK2ZW_KEY = 'attack2ZW'
 const ATTACK3ZW_KEY = 'attack3ZW'
 
 let info
-let nbRequired
 let currentAttack = 'attack1'
 let zCurrentAttack = 'attack1Z'
 
@@ -164,8 +163,6 @@ class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.world.setBoundsCollision(true, true, true, true);
-
-    this.debugShowBody = false;
   
     /* The Collider takes two objects and tests for collision and performs separation against them.
     Note that we could call a callback in case of collision... */
@@ -195,7 +192,6 @@ class GameScene extends Phaser.Scene {
         await this.scene.restart();
         this.scoreLabel.setScore(0);
         info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
-        nbRequired.setText(this.botHealth / this.playerDamage);
         
         console.log('game reset finsh');
         this.events.emit('ready');
@@ -268,8 +264,6 @@ class GameScene extends Phaser.Scene {
   createHealth(){
     const hp = this.add.image(40, 100,'health');
     info = this.add.text(60, 100, `${this.playerHealth}/${this.playerMaxHealth}`);
-    this.add.text(60,120, 'nb hits required:');
-    nbRequired = this.add.text(225,120, this.botHealth/this.playerDamage);
     return hp;
   }
   
@@ -458,7 +452,6 @@ class GameScene extends Phaser.Scene {
       }, Phaser.Math.Between(100,3000));
       
     }
-    nbRequired.setText(this.botHealth/this.playerDamage);
     info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);  
   }
 
