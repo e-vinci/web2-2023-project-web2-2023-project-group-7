@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import GameScene from '../Game/GameScene';
 import cookieMgt from '../../utils/cookieMgt'
+import EndGame from '../Game/EndGame';
 
 let game;
 
@@ -28,7 +29,7 @@ const GamePage = () => {
         debug: true,
       },
     },
-    scene: [GameScene],
+    scene: [GameScene, EndGame],
     //  parent DOM element into which the canvas created by the renderer will be injected.
     parent: 'gameDiv',
   };
