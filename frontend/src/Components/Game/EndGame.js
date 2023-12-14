@@ -17,8 +17,7 @@ class EndGame extends Phaser.Scene {
         this.load.image('restart', restart);
     }
 
-    create ()
-    {       
+    create (){       
         this.add.image(400,300, 'endgame')
         const reset = this.add.image(400, 430, 'restart').setInteractive()
         console.log('interactivity done');
@@ -31,9 +30,6 @@ class EndGame extends Phaser.Scene {
             console.log(gameScene);
             console.log(this);
         });
-        
-        
     }
-    // eslint-disable-next-line class-methods-use-this
 }
 export default EndGame;
