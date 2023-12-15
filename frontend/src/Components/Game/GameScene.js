@@ -457,7 +457,7 @@ class GameScene extends Phaser.Scene {
         this.botDamage = Phaser.Math.Between(2, this.botMaxDamage);
         this.previousBotHealth = this.botHealth;
 
-      }, Phaser.Math.Between(100,3000));
+      }, Phaser.Math.Between(50,500));
       
     }
     info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);  
@@ -465,7 +465,7 @@ class GameScene extends Phaser.Scene {
 
   createHealthBonus(){
     this.time.addEvent({
-      delay: Phaser.Math.Between(5000,30000),
+      delay: Phaser.Math.Between(2000,15000),
       loop: true,
       callback: () => {
         if(!this.gameOver){
