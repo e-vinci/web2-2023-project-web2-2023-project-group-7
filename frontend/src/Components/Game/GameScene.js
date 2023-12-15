@@ -420,7 +420,7 @@ class GameScene extends Phaser.Scene {
 
     this.botHealth -= this.playerDamage;
     this.playerHealth -= this.botDamage;
-    this.scoreLabel.add(100);
+    this.scoreLabel.add(this.playerDamage);
 
     if(this.playerHealth <= 0){
       this.player.disableBody(true, true);
@@ -434,7 +434,7 @@ class GameScene extends Phaser.Scene {
       
     } else if(this.botHealth <1){
       this.bot.disableBody(true, true);
-      this.scoreLabel.add(this.previousBotHealth);
+      this.scoreLabel.add(100 + this.previousBotHealth);
 
       if(!this.isCollected){
         this.playerMaxHealth += 10;
@@ -549,10 +549,10 @@ class GameScene extends Phaser.Scene {
     } else if (randomGeneratedNumber === 5){
       this.playerDamage *= 2;
       this.botMaxHealth /= 2;
-      mysteryInfo.setText('Dégats du joueur multiplié par deux, points de vies max du zombie divisé par 2')
+      mysteryInfo.setText('Dégats du joueur multiplié par deux, pv max du zombie divisé par 2')
     } else {
       this.botMaxDamage += this.playerMaxHealth*0.1;
-      mysteryInfo.setText('le zombie fait désormais au maximum ses anciens dégats max additionné a 10% des points de vies du joueur')
+      mysteryInfo.setText('le zombie fait au max 10% des points de vies max du joueur en plus')
     }
     
     info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
