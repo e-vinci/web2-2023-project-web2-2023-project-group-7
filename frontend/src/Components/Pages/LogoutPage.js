@@ -16,7 +16,7 @@ const LogoutPage = () => {
      
  
       try {
-        const response = await fetch('api/auths/logout', {
+        const response = await fetch(`${process.env.API_BASE_URL}/auths/logout`, {
           method: 'POST',
          
           headers: { 'Content-Type': 'application/json' },

@@ -85,7 +85,7 @@ const ConnectionPage = () => {
    
     try {
       // Send POST request to the registration API
-      const response = await fetch('api/auths/register', {
+      const response = await fetch(`${process.env.API_BASE_URL}/auths/register`, {
         method: 'POST',
         body: JSON.stringify(formData),
         headers: { 'Content-Type': 'application/json' }

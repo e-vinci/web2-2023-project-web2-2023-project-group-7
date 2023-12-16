@@ -15,7 +15,7 @@ const storeUser =  (responseFetch) => {
             'score': score,
         };
 
-        const response = await fetch('api/users/writescore', {
+        const response = await fetch(`${process.env.API_BASE_URL}/users/writescore`, {
             method: 'POST',
             body: JSON.stringify(formData),
             headers: { 'Content-Type': 'application/json' },
@@ -41,7 +41,7 @@ const storeUser =  (responseFetch) => {
  */
 const getRanking = async  () => {
     // GET car pas besoin de modifier, passer des données & rien de secret
-    const response = await fetch('api/users/Ranking', {
+    const response = await fetch(`${process.env.API_BASE_URL}/users/Ranking`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     });

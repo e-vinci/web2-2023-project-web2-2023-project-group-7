@@ -53,7 +53,7 @@ const ConnectionPage = () => {
     };
 
     try {
-      const response = await fetch('api/auths/login', {
+      const response = await fetch(`${process.env.API_BASE_URL}/auths/login`, {
         method: 'POST',
         body: JSON.stringify(formData),
         headers: { 'Content-Type': 'application/json' }
