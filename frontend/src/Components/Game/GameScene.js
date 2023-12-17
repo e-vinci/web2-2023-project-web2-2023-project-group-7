@@ -53,6 +53,8 @@ let zCurrentAttack = 'attack1Z'
 class GameScene extends Phaser.Scene {
   constructor() {
     super('game-scene');
+
+    // Game objects and variables initialization
     this.player = undefined;
     this.bot = undefined;
     this.cursors = undefined;
@@ -77,6 +79,7 @@ class GameScene extends Phaser.Scene {
     this.isZombieMan = false;
   }
 
+  // Preloads game assets before the scene starts.
   preload() {
     this.load.image('obscurity', skyAsset);
     this.load.image(GROUND_KEY, platformAsset);
@@ -148,22 +151,30 @@ class GameScene extends Phaser.Scene {
 
   }
 
+  // Creates game elements and initializes the scene
   create() {
+    // Background and platforms
     this.add.image(400, 300, 'obscurity');
     this.createHealth();
     this.createMystery();
     this.platforms = this.createPlatforms();
+
+    // Player and bot creation
     this.player = this.createPlayer();
     this.bot = this.createBot();
     
+    // Other game elements creation
     this.createHealthBonus()
     this.createMysteryBonus();
 
+    // Score label creation
     this.scoreLabel = this.createScoreLabel(16, 16, 0);
 
+    // Collider setup
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.bot, this.platforms);    
     
+    // Keyboard input setup
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.world.setBoundsCollision(true, true, true, true);
@@ -173,13 +184,18 @@ class GameScene extends Phaser.Scene {
 
     // create all animations
     this.createAnims();
+
+    // Scene reset event setup
     this.reset();
   }
 
+  // Resets the game scene, placing objects in their initial positions
   reset(){
     if (this.scene) {
       this.events.on('resetData', async () => {
         console.log('creat game');
+
+        // reset all game data
         this.player.setPosition(140, 470);
         this.player.setVelocity(0, 0);
         this.gameOver = false;
@@ -187,24 +203,28 @@ class GameScene extends Phaser.Scene {
         // reset game data
         this.bot.setPosition(600, 470);
         this.bot.setVelocityX(-200);
+        // plzyer stats
         this.playerHealth = 20;
         this.playerMaxHealth = 100;
         this.playerDamage = 1;
+        // bot stats
         this.botMaxHealth = 5;
         this.botMaxDamage = 3;
         await this.scene.restart();
         this.scoreLabel.setScore(0);
-        info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
-        
+        info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);    
+
         console.log('game reset finsh');
         this.events.emit('ready');
         console.log('envoyer ready');
         console.log('game reset finish');
+        // start the EndGame Scene
         this.scene.start('EndGame');
       }, this)
     }
   }
 
+  // Updates the game state on each frame
   update() {
     if (this.gameOver){
       console.log('game is over');    
@@ -216,12 +236,8 @@ class GameScene extends Phaser.Scene {
         
     } else {
         console.error('Cannot access events: events is undefined.');
-    }
-      this.events.on('ready' , () => {
-        console.log('before jumping end gamescene');
-        
-      })
-    }
+    }}
+    
     this.physics.world.wrap(this.bot, 0, false);
 
     if (this.physics.overlap(this.player, this.bot)) {
@@ -248,7 +264,7 @@ class GameScene extends Phaser.Scene {
   }
   
   
-
+// create an return platforms
   createPlatforms() {
     const platforms = this.physics.add.staticGroup();
 
@@ -262,18 +278,21 @@ class GameScene extends Phaser.Scene {
     return platforms;
   }
 
+  // Creates the health information
   createHealth(){
     const hp = this.add.image(40, 100,'health');
     info = this.add.text(60, 100, `${this.playerHealth}/${this.playerMaxHealth}`);
     return hp;
   }
   
+  // Create mystery box information
   createMystery(){
     const mysteryText = this.add.text(60,120, 'Mystery:');
     mysteryInfo = this.add.text(140,120, 'Aucun mystery récupéré');
     return mysteryText;
   }
 
+  // Create the bot character
   createBot() {
     let botSprite
     if(this.isZombieMan) {
@@ -288,6 +307,7 @@ class GameScene extends Phaser.Scene {
     bot.setVelocityX(-200);
     bot.flipX = true;
   
+    // automate zombie movements to follow the player on horizental axis
     this.time.addEvent({
       delay: 50,
       loop: true,
@@ -337,21 +357,20 @@ class GameScene extends Phaser.Scene {
     return bot;
   }
 
+  // Create the player character 
   createPlayer() {
     const player = this.physics.add.sprite(140, 470, IDLE_KEY);
     player.setBounce(0.2);
     
     player.body.setSize(67,74,true).setOffset(20,54);
-    /* The 'left' animation uses frames 0, 1, 2 and 3 and runs at 10 frames per second.
-    The 'repeat -1' value tells the animation to loop.
-    */
-
+    
     player.setCollideWorldBounds(true);
     player.body.onWorldBounds = true;
 
     return player;
   }
 
+  // Handles the collision between the player and the bot characters
   handlePlayerBotCollision() {
   
     const timer = this.time.now;
@@ -415,6 +434,7 @@ class GameScene extends Phaser.Scene {
     }
   }
 
+  // Handles the health updates and score calculations after a collision
   handleHealth(){
 
     this.botHealth -= this.playerDamage;
@@ -463,6 +483,7 @@ class GameScene extends Phaser.Scene {
     info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);  
   }
 
+  // Creates a health bonus in the game
   createHealthBonus(){
     this.time.addEvent({
       delay: Phaser.Math.Between(2000,15000),
@@ -490,6 +511,10 @@ class GameScene extends Phaser.Scene {
     });
   }
 
+  /**
+ * Handles the collection of the health bonus by the player.
+ * Increases the player's health and updates the display accordingly.
+ */
   collectHealthBonus(qty) {
     this.playerHealth += qty;
     if(this.playerHealth > this.playerMaxHealth) {
@@ -499,6 +524,11 @@ class GameScene extends Phaser.Scene {
     info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
   }
 
+  /**
+ * Creates a mystery box bonus in the game.
+ * The mystery box appears at random intervals near the player's position.
+ * if the player collects the mystery box, a random effect is applied
+ */
   createMysteryBonus(){
     this.time.addEvent({
       delay: Phaser.Math.Between(30000,120000),
@@ -526,6 +556,7 @@ class GameScene extends Phaser.Scene {
     });
   }
 
+  // Handles the collection of the mystery bonus by the player and select a random effect to be applied
   collectMysteryBonus() {
     const randomGeneratedNumber = Phaser.Math.Between(1,6);
 
@@ -557,6 +588,7 @@ class GameScene extends Phaser.Scene {
     info.setText(`${this.playerHealth}/${this.playerMaxHealth}`);
   }
 
+  // sprites animations
   createAnims(){
     this.anims.create({
       key: 'walk',
@@ -664,6 +696,7 @@ class GameScene extends Phaser.Scene {
     });
   }
 
+  // create a score Label in game scene
   createScoreLabel(x, y, score) {
     const style = { fontSize: '32px', fill: '#000' };
     const label = new ScoreLabel(this, x, y, score, style);
