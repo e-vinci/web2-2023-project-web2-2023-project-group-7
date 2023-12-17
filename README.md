@@ -76,7 +76,7 @@
      - creation grahique 
      - mecanique de combat
      - creation d (IA)
-     - mecanique de 
+     - mecanique de déplacement
      - choix de la bibliotheque
 - Low priority
     - difficulté de l'IA
