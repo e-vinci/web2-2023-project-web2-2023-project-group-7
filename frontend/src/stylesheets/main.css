@@ -1,0 +1,64 @@
+
+/*css pour la home page */
+/* Ajoutez ce style à votre fichier CSS ou à votre balise style dans le composant React */
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Ajustez la hauteur en fonction de vos besoins */
+}
+
+.home-page-content button {
+  margin: 30px;
+  padding: 30px 50px;
+  font-size: 31px;
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Couleur et opacité de l'overlay */
+  z-index: 1000; /* Assurez-vous que le z-index est supérieur à celui de la barre de navigation */
+}
+
+/* style de navigation pour la navbar */
+.Navbar {
+  z-index: 999;
+}
+.page-locked {
+  overflow: hidden; /* Empêche le défilement de la page */
+  pointer-events: none; /* Désactive toutes les interactions de la souris/du clavier */
+  filter: blur(5px); /* Applique un flou à la page pour indiquer qu'elle est verrouillée (facultatif) */
+
+}
+#cookie-banner {
+  background-color: rgba(200, 200, 200, 0.9); /* Gris clair avec opacité */
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.cookie-banner-content {
+  text-align: center;
+}
+
+.cookie-banner-content p {
+  margin-bottom: 10px;
+}
+
+#cookie-banner button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+

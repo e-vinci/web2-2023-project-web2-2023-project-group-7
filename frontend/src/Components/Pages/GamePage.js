@@ -1,14 +1,21 @@
 import Phaser from 'phaser';
 import GameScene from '../Game/GameScene';
+import cookieMgt from '../../utils/cookieMgt'
+import EndGame from '../Game/EndGame';
 
 let game;
 
 const GamePage = () => {
+
   const phaserGame = `
+  height: 90%;
 <div id="gameDiv" class="d-flex justify-content-center my-3">
 </div>`;
 
   const main = document.querySelector('main');
+
+  main.id = 'GamePage';
+
   main.innerHTML = phaserGame;
 
   const config = {
@@ -22,7 +29,7 @@ const GamePage = () => {
         debug: false,
       },
     },
-    scene: [GameScene],
+    scene: [GameScene, EndGame],
     //  parent DOM element into which the canvas created by the renderer will be injected.
     parent: 'gameDiv',
   };
@@ -31,6 +38,7 @@ const GamePage = () => {
   // therefore destroy any started game prior to recreate it
   if (game) game.destroy(true);
   game = new Phaser.Game(config);
+  cookieMgt(main.id);
 };
 
 export default GamePage;

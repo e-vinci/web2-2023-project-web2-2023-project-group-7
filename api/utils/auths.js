@@ -3,6 +3,14 @@ const { readOneUserFromUsername } = require('../models/users');
 
 const jwtSecret = 'ilovemypizza!';
 
+/**
+ * Middleware function to authorize requests based on a JWT token.
+ * 
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {void} - This function does not return a value directly, but may send responses or call the next middleware.
+ */
 const authorize = (req, res, next) => {
   const token = req.get('authorization');
   if (!token) return res.sendStatus(401);
@@ -24,11 +32,4 @@ const authorize = (req, res, next) => {
   }
 };
 
-const isAdmin = (req, res, next) => {
-  const { username } = req.user;
-
-  if (username !== 'admin') return res.sendStatus(403);
-  return next();
-};
-
-module.exports = { authorize, isAdmin };
+module.exports = { authorize };

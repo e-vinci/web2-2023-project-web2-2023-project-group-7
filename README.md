@@ -1,3 +1,4 @@
+[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-718a45dd9cf7e7f842a935f5ebbe5719a5e09af4491e668f4dbf3b35d5cca122.svg)](https://classroom.github.com/online_ide?assignment_repo_id=12420111&assignment_repo_type=AssignmentRepo)
 # Projet Web2 2023
 ## Introduction
 - Ce boilerplate vous offre l'architecture de base de votre frontend et de votre API pour développer un projet qui vous tient à coeur et qui répond aux exigences résumées ci-dessous (et détaillées dans le template du rapport de projet). 
@@ -63,3 +64,22 @@
 
 ## Revues de projets par les pairs
 - Une fois votre projet soumis, vous devrez réaliser un minimum de 5 revues qui vous seront attribuées automatiquement via le site du cours.
+
+## Cas d'utilisations 
+(duo 1 :     )  (duo 2:      )
+- High priority :
+    - score board
+    - creation /fin de partie
+    - info player 
+    - conection and register 
+- Medium priority
+     - creation grahique 
+     - mecanique de combat
+     - creation d (IA)
+     - mecanique de 
+     - choix de la bibliotheque
+- Low priority
+    - difficulté de l'IA
+    - amelioration de batiments
+    - ajouter différents cartes 
+    - crée differents factions

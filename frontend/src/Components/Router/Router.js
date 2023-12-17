@@ -7,6 +7,9 @@ const Router = () => {
   onHistoryChange();
 };
 
+/**
+ * Handle click events on the navigation bar.
+ */
 function onNavBarClick() {
   const navbarWrapper = document.querySelector('#navbarWrapper');
 
@@ -24,6 +27,9 @@ function onNavBarClick() {
   });
 }
 
+/**
+ * Handle changes in browser history (e.g., back/forward button clicks).
+ */
 function onHistoryChange() {
   window.addEventListener('popstate', () => {
     const uri = removePathPrefix(window.location.pathname);
@@ -32,6 +38,9 @@ function onHistoryChange() {
   });
 }
 
+/**
+ * Handle actions to be performed when the frontend is loaded.
+ */
 function onFrontendLoad() {
   window.addEventListener('load', () => {
     const uri = removePathPrefix(window.location.pathname);
